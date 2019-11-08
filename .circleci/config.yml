@@ -1,0 +1,127 @@
+version: 2.1 
+general:
+
+jobs:
+  test:
+
+    working_directory: ~/repo 
+
+    docker:
+    - image: circleci/openjdk:8-jdk
+
+    environment:
+      # Customize the JVM maximum heap size
+      JVM_OPTS: -Xmx3200m
+            
+    steps:
+      - checkout
+
+      # download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # use latest cache if no exact match found
+            - v1-dependencies-
+
+      - run:
+          name: run unit tests 
+          command: mvn clean test 
+    
+      #- store_test_results:
+        #  path: ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar 
+
+      # check code quality
+      - run:
+          name: Install Sonarqube scanner
+          command: |
+
+             wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip
+             unzip sonar-scanner-cli-3.2.0.1227-linux.zip
+
+#      - run:
+#          name: Run Sonarqube scanner
+#          command: |
+#                 export SONAR_SCANNER_OPTS="-Xmx512m"
+#                 eval ./sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner \
+#                 -Dsonar.projectKey=scala-maven-example \
+#                -Dsonar.sources=. \
+#                 -Dsonar.host.url=${SONAR_SERVER} \
+#                 -Dsonar.login=${SONARQUBE_TOKEN} $SONAR_SCANNER_OPTS_CUSTOM
+
+  build:
+    
+    working_directory: ~/repo 
+
+    docker:
+    - image: circleci/openjdk:8-jdk
+
+    environment:
+      # Customize the JVM maximum heap size
+      JVM_OPTS: -Xmx3200m
+            
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # use latest cache if no exact match found
+            - v1-dependencies-
+ 
+      - run: 
+          name: create package
+          command: mvn clean install -Dmaven.test.skip=true
+
+      # store artifacts
+      - store_artifacts:
+          path: ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar
+      
+      # save build cache
+      - save_cache:
+          key: v1-dependencies-{{ checksum "pom.xml" }}  
+          paths:
+            - ~/.m2
+
+      # create workspace
+      - run:
+          name: Workspace
+          command: |
+            mkdir -p workspace
+            pwd
+            ls -lart ~/repo/target
+            cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/workspace/scala-maven-example-1.0.0-SNAPSHOT.jar
+            cp ~/repo/Dockerfile ~/repo/workspace
+
+      # setup remote env for docker in paid version
+     # - setup_remote_docker:
+              # docker_layer_caching: true
+
+      # setup remote env for docker in free version
+      - setup_remote_docker
+
+      # build docker image
+      - run:
+          name: Docker build
+          command: |
+            pwd
+            ls -altr
+            cd ~/repo/workspace
+            ls -latr ~/repo/workspace
+            docker build -t circleci/scala-maven .
+            
+      # show all docker images
+      - run: docker images 
+      
+workflows:
+  version: 2.1
+  workflow:
+    jobs:
+    - test
+    - build:
+        requires:
+          - test
+        filters:
+          branches:
+            only:
+            - master
+            - develop 

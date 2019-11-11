@@ -119,18 +119,13 @@ jobs:
       - run: docker images 
       
 workflows:
-  version: 2
-  tests-check:
+  version: 2.1
+  test-and-build:
     jobs:
-    - test:
-        filters:
-          branches:
-            only:
-            - master
-            - develop
-  build-only:
-    jobs:
+    - test
     - build:
+        requires:
+          - test
         filters:
           branches:
             only:

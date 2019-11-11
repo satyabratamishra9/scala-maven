@@ -25,7 +25,13 @@ jobs:
 
       - run:
           name: run unit tests 
-          command: mvn clean test 
+          command: mvn clean test
+
+      # save build cache
+      - save_cache:
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2 
     
       #- store_test_results:
         #  path: ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar 
@@ -116,7 +122,12 @@ workflows:
   version: 2.1
   workflow:
     jobs:
-    - test
+    - test:
+        filters:
+          branches:
+            only:
+            - master
+            - develop 
     - build:
         requires:
           - test

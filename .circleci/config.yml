@@ -86,7 +86,7 @@ jobs:
           name: create artifacts directory
           command: |
             ls
-            cd workspace
+            cd workspace/archieve
             ls
 
 # cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar" ~/repo/artifacts;

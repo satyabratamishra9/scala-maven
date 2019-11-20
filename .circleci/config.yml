@@ -104,44 +104,53 @@ jobs:
             - scala-maven-example-1.0.0-SNAPSHOT.jar
             - Dockerfile
             
-  push: 
+ # push: 
     
-    working_directory: ~/repo 
+ #   working_directory: ~/repo 
 
-    docker:
-    - image: circleci/python:3.6.1
+#    docker:
+#    - image: circleci/python:3.6.1
 
-    environment:
+#    environment:
       # Customize the JVM maximum heap size
-      JVM_OPTS: -Xmx3200m
+#      JVM_OPTS: -Xmx3200m
             
-    steps:
-      - checkout
-      - attach_workspace:
-          at: workspace
+ #   steps:
+ #     - checkout
       
+ #     - attach_workspace:
+ #         at: workspace
+      
+      - run:
+          name: install python and awscli
+          command: |
+            sudo apt-get update && sudo apt-get install -qq -y python-pip libpython-dev
+            curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py
+            sudo pip install -q awscli --upgrade
+            aws --version      
+            
       # setup remote env for docker
       - setup_remote_docker
               # docker_layer_caching: true
       
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "pom.xml" }}
+ #     - restore_cache:
+ #         keys:
+ #           - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
-            - v1-dependencies-
+#            - v1-dependencies-
             
-      # install aws cli
-      - run:
-          name: install aws cli
-          command: |
-             python3 -m venv venv
-             . venv/bin/activate
-             pip install awscli
+#      # install aws cli
+#      - run:
+#          name: install aws cli
+#          command: |
+#             python3 -m venv venv
+#             . venv/bin/activate
+#             pip install awscli
              
       - run:
           name: Setup common environment variables
           command: |
-            echo 'export ECR_REPOSITORY_NAME="${ECR_REPOSITORY_NAME}"' >> $BASH_ENV
+            echo 'export ECR_REPOSITORY_NAME="${AWS_RESOURCE_NAME_PREFIX}"' >> $BASH_ENV
             echo 'export FULL_IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:${CIRCLE_SHA1}"' >> $BASH_ENV
       
       - run:
@@ -188,9 +197,9 @@ workflows:
     - build:
         requires:
           - test
-    - push:
-        requires:
-          - build
+    #- push:
+    #    requires:
+    #      - build
         filters:
           branches:
             only:

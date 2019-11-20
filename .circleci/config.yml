@@ -124,10 +124,10 @@ jobs:
       - run:
           name: install python and awscli
           command: |
-            sudo apt-get install -qq -y python-pip libpython-dev
-            curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py --user
-            sudo pip install --upgrade --user awscli
-            aws --version     
+            sudo apt-get update && sudo apt-get install -qq -y python-pip libpython-dev
+            curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py
+            sudo pip install -q awscli --upgrade
+            aws --version               
                         
       # setup remote env for docker
       - setup_remote_docker

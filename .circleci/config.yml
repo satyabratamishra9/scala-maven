@@ -32,9 +32,6 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2 
-    
-      #- store_test_results:
-        #  path: ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar 
 
       # check code quality
       - run:
@@ -77,10 +74,14 @@ jobs:
       - run: 
           name: create package
           command: mvn clean install -Dmaven.test.skip=true
-
-      # store artifacts
+          
+      - run:
+          name: create artifacts directory
+          command: |
+            echo "~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar" > ~/repo/artifacts;
+  
       - store_artifacts:
-          path: ~/repo/target/*.jar
+          path: ~/repo/artifacts
           destination: JARS
       
       # save build cache

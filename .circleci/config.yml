@@ -122,11 +122,15 @@ jobs:
  #         at: workspace
       
       - run:
-          name: install python and awscli
+          name: install aws cli
           command: |
-            sudo yum install python36
-            curl -O https://bootstrap.pypa.io/get-pip.py && sudo python3 get-pip.py --user           
-            sudo pip3 install --upgrade --user awscli
+            python --version
+            python3 --version
+            sudo apt-get install python3    
+            python3 --version
+            curl -O https://bootstrap.pypa.io/get-pip.py   
+            sudo python3 get-pip.py --user
+            sudo pip3 install awscli --upgrade --user          
             aws --version               
                         
       # setup remote env for docker

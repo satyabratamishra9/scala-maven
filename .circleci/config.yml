@@ -1,6 +1,9 @@
 version: 2.1 
 general:
 
+orbs:
+  aws-ecr: circleci/aws-ecr@6.5.0
+
 jobs:
   test:
 
@@ -103,20 +106,27 @@ jobs:
               # docker_layer_caching: true
 
       # setup remote env for docker in free version
-      - setup_remote_docker
+      #- setup_remote_docker
 
       # build docker image
-      - run:
-          name: Docker build
-          command: |
-            pwd
-            ls -altr
-            cd ~/repo/workspace
-            ls -latr ~/repo/workspace
-            docker build -t circleci/scala-maven .
+      #- run:
+      #    name: Docker build
+      #    command: |
+      #      pwd
+      #      ls -altr
+      #      cd ~/repo/workspace
+      #      ls -latr ~/repo/workspace
+      #      docker build -t circleci/scala-maven .
+      
+      - aws-ecr/build_and_push_image:
+          account-url: ${AWS_ECR_ACCOUNT_URL}
+          repo: ${CIRCLE_PROJECT_REPONAME}
+          region: ${AWS_REGION}
+          tag: ${CIRCLE_SHA1}
             
       # show all docker images
-      - run: docker images 
+      - run: aws ecr list-images \
+             --repository-name scala-maven
       
 workflows:
   version: 2.1

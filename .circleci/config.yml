@@ -1,9 +1,6 @@
 version: 2.1 
 general:
 
-orbs:
-  aws-ecr: circleci/aws-ecr@6.5.0
-
 jobs:
   test:
 
@@ -100,27 +97,57 @@ jobs:
             ls -lart ~/repo/target
             cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/workspace/scala-maven-example-1.0.0-SNAPSHOT.jar
             cp ~/repo/Dockerfile ~/repo/workspace
-
-      # setup remote env for docker
-      #- setup_remote_docker
-              # docker_layer_caching: true
-
-      # build docker image
-      #- run:
-      #    name: Docker build
-      #    command: |
-      #      pwd
-      #      ls -altr
-      #      cd ~/repo/workspace
-      #      ls -latr ~/repo/workspace
-      #      docker build -t circleci/scala-maven .
-      
-      - aws-ecr/build_and_push_image:
-          account-url: ${AWS_ECR_ACCOUNT_URL}
-          repo: ${CIRCLE_PROJECT_REPONAME}
-          region: ${AWS_REGION}
-          tag: ${CIRCLE_SHA1}
             
+  push:
+    
+    working_directory: ~/repo 
+
+    docker:
+    - image: circleci/python:3.6.1
+
+    environment:
+      # Customize the JVM maximum heap size
+      JVM_OPTS: -Xmx3200m
+            
+    steps:
+      - checkout
+      
+      # setup remote env for docker
+      - setup_remote_docker
+              # docker_layer_caching: true
+      
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # use latest cache if no exact match found
+            - v1-dependencies-
+            
+      # install aws cli
+      - run:
+          name: install aws cli
+          command: |
+             python3 -m venv venv
+             . venv/bin/activate
+             pip install awscli
+          
+      # build docker image
+      - run:
+          name: Docker build
+          command: |
+            pwd
+            ls -altr
+            cd ~/repo/workspace
+            ls -latr ~/repo/workspace
+            docker build -t circleci/scala-maven .
+            
+      # pushing to ECR
+      - run:
+          name: Push to ECR
+          command: |
+            . venv/bin/activate
+            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            docker push $AWS_ECR_ACCOUNT_URL/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
+                   
       # show all docker images
       - run: aws ecr list-images \
              --repository-name scala-maven
@@ -133,6 +160,9 @@ workflows:
     - build:
         requires:
           - test
+    - push:
+        requires:
+          - build
         filters:
           branches:
             only:

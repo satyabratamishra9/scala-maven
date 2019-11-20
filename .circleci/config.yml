@@ -1,6 +1,9 @@
 version: 2.1 
 general:
 
+orbs:
+  aws-ecr: circleci/aws-ecr@6.5.0
+  
 jobs:
   test:
 
@@ -103,20 +106,6 @@ jobs:
       #    paths:
       #      - scala-maven-example-1.0.0-SNAPSHOT.jar
       #      - Dockerfile
-            
- # push: 
-    
- #   working_directory: ~/repo 
-
-#    docker:
-#    - image: circleci/python:3.6.1
-
-#    environment:
-      # Customize the JVM maximum heap size
-#      JVM_OPTS: -Xmx3200m
-            
- #   steps:
- #     - checkout
       
  #     - attach_workspace:
  #         at: workspace
@@ -131,58 +120,30 @@ jobs:
       # setup remote env for docker
       - setup_remote_docker
               # docker_layer_caching: true
-      
- #     - restore_cache:
- #         keys:
- #           - v1-dependencies-{{ checksum "pom.xml" }}
-            # use latest cache if no exact match found
-#            - v1-dependencies-
-            
-#      # install aws cli
-#      - run:
-#          name: install aws cli
-#          command: |
-#             python3 -m venv venv
-#             . venv/bin/activate
-#             pip install awscli
-             
-#      - run:
-#          name: Setup common environment variables
-#          command: |
-#            echo 'export ECR_REPOSITORY_NAME="${AWS_RESOURCE_NAME_PREFIX}"' >> $BASH_ENV
-#            echo 'export FULL_IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:${CIRCLE_SHA1}"' >> $BASH_ENV
-      
-      #- run:
-      #    name: Build image
-      #    command: |
-      #      docker build -t circleci/scala-maven .
-            
-      #- run:
-      #    name: Save image to an archive
-      #    command: |
-      #      mkdir docker-image
-      #      docker save -o docker-image/image.tar $FULL_IMAGE_NAME
           
       # build docker image
-      - run:
-          name: Docker build
-          command: |
-            pwd
-            ls -altr
-            cd ~/repo/workspace
-            ls -latr ~/repo/workspace
-            docker build -t scala-maven .
-            docker images
+      #- run:
+      #    name: Docker build
+      #    command: |
+      #      cd ~/repo/workspace
+      #      docker build -t scala-maven .
+      #      docker images
             
       # pushing to ECR
-      - run:
-          name: Push to ECR
-          command: |
-            cd ~/repo/workspace
-            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-            docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:$CIRCLE_SHA1
-            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
-                   
+      #- run:
+      #    name: Push to ECR
+      #    command: |
+      #      cd ~/repo/workspace
+      #      eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      #      docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:$CIRCLE_SHA1
+      #      docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
+      
+      - aws-ecr/build_and_push_image:
+          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+          repo: "${AWS_RESOURCE_NAME_PREFIX}"
+          region: ${AWS_DEFAULT_REGION}
+          tag: "${CIRCLE_SHA1}"
+          
       # show all docker images
       - run: 
           name: 
@@ -198,9 +159,6 @@ workflows:
     - build:
         requires:
           - test
-    #- push:
-    #    requires:
-    #      - build
         filters:
           branches:
             only:

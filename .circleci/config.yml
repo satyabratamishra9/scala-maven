@@ -99,11 +99,12 @@ jobs:
             cp ~/repo/Dockerfile ~/repo/workspace
             
       - persist_to_workspace:
-          root: .
+          root: workspace
           paths:
-            - workspace
+            - scala-maven-example-1.0.0-SNAPSHOT.jar
+            - Dockerfile
             
-  push:
+  push: 
     
     working_directory: ~/repo 
 

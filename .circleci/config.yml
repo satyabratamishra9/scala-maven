@@ -118,7 +118,7 @@ jobs:
             sudo pip install -q awscli --upgrade
                         
       # setup remote env for docker
-      - setup_remote_docker
+      # - setup_remote_docker
               # docker_layer_caching: true
           
       # build docker image
@@ -137,12 +137,6 @@ jobs:
       #      eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
       #      docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:$CIRCLE_SHA1
       #      docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
-      
-      - aws-ecr/build_and_push_image:
-         account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-         repo: "${AWS_RESOURCE_NAME_PREFIX}"
-         region: ${AWS_DEFAULT_REGION}
-         tag: "${CIRCLE_SHA1}"
            
       # show all docker images
       - run: 
@@ -159,7 +153,11 @@ workflows:
     - build:
         requires:
           - test
-    - aws-ecr/build_and_push_image:        
+      - aws-ecr/build_and_push_image:
+         account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+         repo: "${AWS_RESOURCE_NAME_PREFIX}"
+         region: ${AWS_DEFAULT_REGION}
+         tag: "${CIRCLE_SHA1}"        
          requires:
            - build
           

@@ -101,12 +101,9 @@ jobs:
             cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/workspace/scala-maven-example-1.0.0-SNAPSHOT.jar
             cp ~/repo/Dockerfile ~/repo/workspace
 
-      # setup remote env for docker in paid version
-     # - setup_remote_docker:
+      # setup remote env for docker
+      - setup_remote_docker:
               # docker_layer_caching: true
-
-      # setup remote env for docker in free version
-      #- setup_remote_docker
 
       # build docker image
       #- run:

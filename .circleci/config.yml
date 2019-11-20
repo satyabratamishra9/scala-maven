@@ -27,7 +27,7 @@ jobs:
           name: run unit tests 
           command: mvn clean test
 
-      # save build cache
+     # save build cache
       - save_cache:
           key: v1-dependencies-{{ checksum "pom.xml" }}
           paths:
@@ -37,26 +37,14 @@ jobs:
       - run:
           name: Install Sonarqube scanner
           command: |
-
              wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip
              unzip sonar-scanner-cli-3.2.0.1227-linux.zip
 
-#      - run:
-#          name: Run Sonarqube scanner
-#          command: |
-#                 export SONAR_SCANNER_OPTS="-Xmx512m"
-#                 eval ./sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner \
-#                 -Dsonar.projectKey=scala-maven-example \
-#                -Dsonar.sources=. \
-#                 -Dsonar.host.url=${SONAR_SERVER} \
-#                 -Dsonar.login=${SONARQUBE_TOKEN} $SONAR_SCANNER_OPTS_CUSTOM
-
-       - run: 
+      - run: 
           name: create package
           command: mvn clean install -Dmaven.test.skip=true
-          
-       # create workspace
-       - run:
+
+      - run:
           name: save package to an archive
           command: |
             mkdir -p archieve
@@ -65,13 +53,13 @@ jobs:
             cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/archieve/scala-maven-example-1.0.0-SNAPSHOT.jar
             
        #     cp ~/repo/Dockerfile ~/repo/workspace
-       
-       - persist_to_workspace:
+
+      - persist_to_workspace:
           root: .
           paths:
             - archieve
 
-  build:
+build:
     
     working_directory: ~/repo 
 
@@ -84,7 +72,7 @@ jobs:
             
     steps:
       - checkout
-      
+
       - attach_workspace:
           at: workspace
 
@@ -93,18 +81,19 @@ jobs:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
             - v1-dependencies-
-          
+
       - run:
           name: create artifacts directory
           command: |
             ls
-    # cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar" ~/repo/artifacts;
+
+# cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar" ~/repo/artifacts;
   
      # - store_artifacts:
      #     path: ~/repo/artifacts
      #     destination: JARS
-      
-      # save build cache
+
+# save build cache
       - save_cache:
           key: v1-dependencies-{{ checksum "pom.xml" }}  
           paths:
@@ -120,8 +109,8 @@ jobs:
       # setup remote env for docker
       - setup_remote_docker
               # docker_layer_caching: true
-          
-      # build docker image
+
+# build docker image
       - run:
           name: Docker build
           command: |
@@ -137,14 +126,14 @@ jobs:
             eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
             docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:$CIRCLE_SHA1
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
-                   
-      # show all docker images
+
+# show all docker images
       - run: 
           name: 
           command: | 
             eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
             aws ecr list-images --repository-name scala-maven
-      
+
 workflows:
   version: 2.1
   test-and-build:

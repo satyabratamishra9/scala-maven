@@ -137,12 +137,6 @@ jobs:
       #      eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
       #      docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:$CIRCLE_SHA1
       #      docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
-      
-      - aws-ecr/build_and_push_image:
-          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-          repo: "${AWS_RESOURCE_NAME_PREFIX}"
-          region: ${AWS_DEFAULT_REGION}
-          tag: "${CIRCLE_SHA1}"
           
       # show all docker images
       - run: 
@@ -159,8 +153,14 @@ workflows:
     - build:
         requires:
           - test
-        filters:
-          branches:
-            only:
-            - master
-            - develop
+    - aws-ecr/build_and_push_image:
+         account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+         repo: "${AWS_RESOURCE_NAME_PREFIX}"
+         region: ${AWS_DEFAULT_REGION}
+         tag: "${CIRCLE_SHA1}"
+          
+         filters:
+           branches:
+             only:
+             - master
+             - develop

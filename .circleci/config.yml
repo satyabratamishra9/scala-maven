@@ -59,7 +59,7 @@ jobs:
           paths:
             - archieve
 
-build:
+  build:
     
     working_directory: ~/repo 
 

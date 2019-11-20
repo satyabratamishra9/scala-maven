@@ -172,7 +172,8 @@ jobs:
             ls -altr
             cd ~/repo/workspace
             ls -latr ~/repo/workspace
-            docker build -t circleci/scala-maven .
+            docker build -t scala-maven .
+            docker images
             
       # pushing to ECR
       - run:
@@ -180,6 +181,7 @@ jobs:
           command: |
             cd ~/repo/workspace
             eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:$CIRCLE_SHA1
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
                    
       # show all docker images

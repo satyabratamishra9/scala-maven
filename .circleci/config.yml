@@ -87,16 +87,6 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}  
           paths:
             - ~/.m2
-
-      # create workspace
-      - run:
-          name: Workspace
-          command: |
-            mkdir -p workspace
-            pwd
-            ls -lart ~/repo/target
-            cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/workspace/scala-maven-example-1.0.0-SNAPSHOT.jar
-            cp ~/repo/Dockerfile ~/repo/workspace
             
   push:
     
@@ -129,6 +119,16 @@ jobs:
              python3 -m venv venv
              . venv/bin/activate
              pip install awscli
+             
+      # create workspace
+      - run:
+          name: Workspace
+          command: |
+            mkdir -p workspace
+            pwd
+            ls -lart ~/repo/target
+            cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/workspace/scala-maven-example-1.0.0-SNAPSHOT.jar
+            cp ~/repo/Dockerfile ~/repo/workspace
           
       # build docker image
       - run:

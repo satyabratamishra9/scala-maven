@@ -98,11 +98,11 @@ jobs:
             cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/workspace/scala-maven-example-1.0.0-SNAPSHOT.jar
             cp ~/repo/Dockerfile ~/repo/workspace
             
-      - persist_to_workspace:
-          root: workspace
-          paths:
-            - scala-maven-example-1.0.0-SNAPSHOT.jar
-            - Dockerfile
+      #- persist_to_workspace:
+      #    root: workspace
+      #    paths:
+      #      - scala-maven-example-1.0.0-SNAPSHOT.jar
+      #      - Dockerfile
             
  # push: 
     

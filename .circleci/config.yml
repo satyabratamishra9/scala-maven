@@ -160,7 +160,7 @@ workflows:
         requires:
           - test
           
-         filters:
+        filters:
            branches:
              only:
              - master

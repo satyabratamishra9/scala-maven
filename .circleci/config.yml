@@ -51,6 +51,26 @@ jobs:
 #                 -Dsonar.host.url=${SONAR_SERVER} \
 #                 -Dsonar.login=${SONARQUBE_TOKEN} $SONAR_SCANNER_OPTS_CUSTOM
 
+       - run: 
+          name: create package
+          command: mvn clean install -Dmaven.test.skip=true
+          
+       # create workspace
+       - run:
+          name: save package to an archive
+          command: |
+            mkdir -p archieve
+            pwd
+            ls -lart ~/repo/target
+            cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/archieve/scala-maven-example-1.0.0-SNAPSHOT.jar
+            
+       #     cp ~/repo/Dockerfile ~/repo/workspace
+       
+       - persist_to_workspace:
+          root: .
+          paths:
+            - archieve
+
   build:
     
     working_directory: ~/repo 
@@ -64,41 +84,31 @@ jobs:
             
     steps:
       - checkout
+      
+      - attach_workspace:
+          at: workspace
 
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
             - v1-dependencies-
- 
-      - run: 
-          name: create package
-          command: mvn clean install -Dmaven.test.skip=true
           
       - run:
           name: create artifacts directory
           command: |
-            echo "~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar" > ~/repo/artifacts;
+            ls
+    # cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar" ~/repo/artifacts;
   
-      - store_artifacts:
-          path: ~/repo/artifacts
-          destination: JARS
+     # - store_artifacts:
+     #     path: ~/repo/artifacts
+     #     destination: JARS
       
       # save build cache
       - save_cache:
           key: v1-dependencies-{{ checksum "pom.xml" }}  
           paths:
             - ~/.m2
-            
-      # create workspace
-      - run:
-          name: Workspace
-          command: |
-            mkdir -p workspace
-            pwd
-            ls -lart ~/repo/target
-            cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/workspace/scala-maven-example-1.0.0-SNAPSHOT.jar
-            cp ~/repo/Dockerfile ~/repo/workspace
       
       - run:
           name: install aws cli

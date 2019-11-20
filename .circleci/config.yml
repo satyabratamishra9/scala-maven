@@ -1,9 +1,6 @@
 version: 2.1 
 general:
 
-orbs:
-  aws-ecr: circleci/aws-ecr@6.5.0
-  
 jobs:
   test:
 
@@ -83,7 +80,8 @@ jobs:
 
       # store artifacts
       - store_artifacts:
-          path: ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar
+          path: ~/repo/target/*.jar
+          destination: JARS
       
       # save build cache
       - save_cache:
@@ -100,15 +98,6 @@ jobs:
             ls -lart ~/repo/target
             cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/workspace/scala-maven-example-1.0.0-SNAPSHOT.jar
             cp ~/repo/Dockerfile ~/repo/workspace
-            
-      #- persist_to_workspace:
-      #    root: workspace
-      #    paths:
-      #      - scala-maven-example-1.0.0-SNAPSHOT.jar
-      #      - Dockerfile
-      
- #     - attach_workspace:
- #         at: workspace
       
       - run:
           name: install aws cli
@@ -118,32 +107,26 @@ jobs:
             sudo pip install -q awscli --upgrade
                         
       # setup remote env for docker
-      # - setup_remote_docker
+      - setup_remote_docker
               # docker_layer_caching: true
           
       # build docker image
-      #- run:
-      #    name: Docker build
-      #    command: |
-      #      cd ~/repo/workspace
-      #      docker build -t scala-maven .
-      #      docker images
+      - run:
+          name: Docker build
+          command: |
+            cd ~/repo/workspace
+            docker build -t scala-maven .
+            docker images
             
       # pushing to ECR
-      #- run:
-      #    name: Push to ECR
-      #    command: |
-      #      cd ~/repo/workspace
-      #      eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-      #      docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:$CIRCLE_SHA1
-      #      docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
-      
-      - aws-ecr/build_and_push_image:
-          region: us-east-1
-          account-url: ${AWS_ECR_ACCOUNT_URL}
-          repo: ${CIRCLE_PROJECT_REPONAME}
-          tag: ${CIRCLE_BUILD_NUM}         
-            
+      - run:
+          name: Push to ECR
+          command: |
+            cd ~/repo/workspace
+            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:$CIRCLE_SHA1
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
+                   
       # show all docker images
       - run: 
           name: 
@@ -159,9 +142,8 @@ workflows:
     - build:
         requires:
           - test
-          
         filters:
-           branches:
-             only:
-             - master
-             - develop
+          branches:
+            only:
+            - master
+            - develop

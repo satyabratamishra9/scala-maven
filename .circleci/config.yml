@@ -154,7 +154,7 @@ jobs:
           command: |
             . venv/bin/activate
             eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-            docker push $AWS_ECR_ACCOUNT_URL/$ECR_REPOSITORY_NAME:latest
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
                    
       # show all docker images
       - run: aws ecr list-images \

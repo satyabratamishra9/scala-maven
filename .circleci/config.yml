@@ -137,16 +137,27 @@ jobs:
              python3 -m venv venv
              . venv/bin/activate
              pip install awscli
+             
+      - run:
+          name: Setup common environment variables
+          command: |
+            echo 'export ECR_REPOSITORY_NAME="${ECR_REPOSITORY_NAME}"' >> $BASH_ENV
+            echo 'export FULL_IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:${CIRCLE_SHA1}"' >> $BASH_ENV
+      
+      - run:
+          name: Build image
+          command: |
+            docker build -t $FULL_IMAGE_NAME .
           
       # build docker image
-      - run:
-          name: Docker build
-          command: |
-            pwd
-            ls -altr
-            cd ~/repo/workspace
-            ls -latr ~/repo/workspace
-            docker build -t circleci/scala-maven .
+      #- run:
+      #    name: Docker build
+      #    command: |
+      #      pwd
+      #      ls -altr
+      #      cd ~/repo/workspace
+      #      ls -latr ~/repo/workspace
+      #      docker build -t circleci/scala-maven .
             
       # pushing to ECR
       - run:
@@ -157,8 +168,11 @@ jobs:
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_SHA1
                    
       # show all docker images
-      - run: aws ecr list-images \
-             --repository-name scala-maven
+      - run: 
+          name: 
+          command: | 
+            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            aws ecr list-images --repository-name scala-maven
       
 workflows:
   version: 2.1

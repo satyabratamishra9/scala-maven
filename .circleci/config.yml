@@ -124,8 +124,8 @@ jobs:
       - run:
           name: install python and awscli
           command: |
-            curl -O https://bootstrap.pypa.io/get-pip.py && sudo python3 get-pip.py --user
-            sudo pip3 install --upgrade --user awscli
+            curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py --user
+            sudo pip install --upgrade --user awscli
             aws --version      
             
       # setup remote env for docker

@@ -60,7 +60,7 @@ jobs:
             mkdir -p archieve
             pwd
             ls -lart ~/repo/target
-            cp ~/repo/target/*.jar ~/repo/archieve/*.jar
+            cp -r ~/repo/target/*.jar ~/repo/archieve/
             
        #     cp ~/repo/Dockerfile ~/repo/workspace
 

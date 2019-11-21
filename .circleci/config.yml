@@ -62,8 +62,6 @@ jobs:
             ls -lart ~/repo/target
             cp -r ~/repo/target/*.jar ~/repo/archieve/
             
-       #     cp ~/repo/Dockerfile ~/repo/workspace
-
       - persist_to_workspace:
           root: .
           paths:
@@ -91,25 +89,10 @@ jobs:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
             - v1-dependencies-
-
-      #- run:
-      #    name: create artifacts directory
-      #    command: |
-      #      ls
-      #      cd workspace/archieve
-      #      ls
-      #      mkdir artifacts
-      #      cp ~/repo/workspace/archieve/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/artifacts;
   
       - store_artifacts:
           path: ~/repo/workspace/archieve/
           destination: JARS
-
-# save build cache
-      - save_cache:
-          key: v1-dependencies-{{ checksum "pom.xml" }}  
-          paths:
-            - ~/.m2
       
       - run:
           name: install aws cli
@@ -128,7 +111,7 @@ jobs:
           command: |
             cp ~/repo/Dockerfile ~/repo/workspace/archieve
             cd ~/repo/workspace/archieve
-            docker build -t scala-maven:${CIRCLE_BRANCH} .
+            docker build -t scala-maven .
             docker images
             
       # pushing to ECR
@@ -137,6 +120,7 @@ jobs:
           command: |
             cd ~/repo/workspace/archieve
             eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:${CIRCLE_BRANCH}
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${CIRCLE_BRANCH}
 
 # show all docker images

@@ -128,7 +128,7 @@ jobs:
           command: |
             cp ~/repo/Dockerfile ~/repo/workspace/archieve
             cd ~/repo/workspace/archieve
-            docker build -t scala-maven .
+            docker build -t scala-maven --build-arg GIT_COMMIT=$(git log -1 --format=%h) .
             docker images
             
       # pushing to ECR
@@ -137,7 +137,7 @@ jobs:
           command: |
             cd ~/repo/workspace/archieve
             eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-            docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:$CIRCLE_BUILD_NUM
+     #       docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:$CIRCLE_BUILD_NUM
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$CIRCLE_BUILD_NUM
 
 # show all docker images

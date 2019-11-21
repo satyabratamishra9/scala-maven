@@ -82,18 +82,18 @@ jobs:
             # use latest cache if no exact match found
             - v1-dependencies-
 
-      - run:
-          name: create artifacts directory
-          command: |
-            ls
-            cd workspace/archieve
-            ls
-            mkdir artifacts
-            cp ~/repo/workspace/archieve/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/artifacts;
+      #- run:
+      #    name: create artifacts directory
+      #    command: |
+      #      ls
+      #      cd workspace/archieve
+      #      ls
+      #      mkdir artifacts
+      #      cp ~/repo/workspace/archieve/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/artifacts;
   
       - store_artifacts:
-          path: ~/repo/artifacts
-          destination: JARS
+          path: ~/repo/workspace/archieve/scala-maven-example-1.0.0-SNAPSHOT.jar
+          #destination: JARS
 
 # save build cache
       - save_cache:

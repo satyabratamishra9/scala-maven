@@ -92,8 +92,8 @@ jobs:
       #      cp ~/repo/workspace/archieve/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/artifacts;
   
       - store_artifacts:
-          path: ~/repo/workspace/archieve/scala-maven-example-1.0.0-SNAPSHOT.jar
-          #destination: JARS
+          path: ~/repo/workspace/archieve/
+          destination: JARS
 
 # save build cache
       - save_cache:

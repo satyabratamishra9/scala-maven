@@ -116,7 +116,7 @@ workflows:
         path: .
         region: AWS_REGION_ENV_VAR_NAME
         repo: scala-maven
-        tag: '{CIRCLE_BRANCH}'
+        tag: 'latest,myECRRepoTag'
         requires:
           - build
         filters:

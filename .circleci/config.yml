@@ -1,6 +1,9 @@
 version: 2.1 
 general:
 
+orbs:
+  nexus-platform-orb: sonatype/nexus-platform-orb@1.0.6
+
 jobs:
   test:
 
@@ -93,6 +96,15 @@ jobs:
       - store_artifacts:
           path: ~/repo/workspace/archive/
           destination: JARS
+          
+      - nexus-orb/install
+
+      - nexus-orb/publish:
+          filename: "target/scala-maven-example-1.0.0-SNAPSHOT.jar"
+          attributes: "-CgroupId=com.example -CartifactId=myapp -Cversion=1.3 -Aextension=jar"
+          username: "${NEXUS_RM_USERNAME}"
+          password: "${NEXUS_RM_PASSWORD}"
+          serverurl: "http://54.225.42.94:8081/repository/scala-maven-nexus/"
       
       - run:
           name: install aws cli
@@ -132,7 +144,7 @@ jobs:
           command: | 
             eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
             aws ecr list-images --repository-name scala-maven
-
+            
 workflows:
   version: 2.1
   test-and-build:
@@ -146,3 +158,6 @@ workflows:
             only:
             - master
             - develop
+    - nexus-orb/nexusjob:
+         requires:
+           - build

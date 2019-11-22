@@ -118,3 +118,10 @@ workflows:
          region: AWS_REGION_ENV_VAR_NAME
          repo: scala-maven
          tag: '{CIRCLE_BRANCH}'
+         requires:
+          - test
+         filters:
+            branches:
+            only:
+            - master
+            - develop

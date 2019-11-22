@@ -70,7 +70,7 @@ jobs:
           paths:
             - archieve
 
-  build_and_push_image:
+  build:
     
     working_directory: ~/repo 
 
@@ -96,15 +96,7 @@ jobs:
       - store_artifacts:
           path: ~/repo/workspace/archieve/
           destination: JARS
-     
-      - aws-ecr/build-and-push-image:
-          account-url: $AWS_ECR_ACCOUNT_URL
-          create-repo: false
-          dockerfile: Dockerfile
-          path: .
-          region: $AWS_DEFAULT_REGION
-          repo: scala-maven
-          tag: '${CIRCLE_BRANCH},myECRRepoTag'
+               
 
 # show all docker images
       - run: 
@@ -118,13 +110,26 @@ workflows:
   test-and-build:
     jobs:
     - test
-    - aws-ecr/build-and-push-image:
-         requires:
+    - build:
+        requires:
           - test
-         filters:
+        filters:
           branches:
             only:
             - master
             - develop
-            
-    
+    - aws-ecr/build-and-push-image:
+        account-url: $AWS_ECR_ACCOUNT_URL
+        create-repo: false
+        dockerfile: Dockerfile
+        path: .
+        region: $AWS_DEFAULT_REGION
+        repo: scala-maven
+        tag: '${CIRCLE_BRANCH},myECRRepoTag'
+        requires:
+          - test
+        filters:
+          branches:
+            only:
+            - master
+            - develop

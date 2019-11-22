@@ -1,9 +1,6 @@
 version: 2.1 
 general:
 
-orbs:
-  aws-ecr: circleci/aws-ecr@6.5.0
-  
 jobs:
   test:
 
@@ -96,7 +93,41 @@ jobs:
       - store_artifacts:
           path: ~/repo/workspace/archieve/
           destination: JARS
-               
+      
+      - run:
+          name: install aws cli
+          command: |
+            sudo apt-get update && sudo apt-get install -qq -y python-pip libpython-dev
+            curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py
+            sudo pip install -q awscli --upgrade
+                        
+      # setup remote env for docker
+      - setup_remote_docker
+              # docker_layer_caching: true
+
+# build docker image
+      - run:
+          name: Docker build
+          command: |
+            cp ~/repo/Dockerfile ~/repo/workspace/archieve
+            cd ~/repo/workspace/archieve
+            docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${CIRCLE_BRANCH} .
+            docker images
+            
+      # pushing to ECR
+      - run:
+          name: Push to ECR
+          command: |
+            cd ~/repo/workspace/archieve
+            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${CIRCLE_BRANCH}
+
+# show all docker images
+      - run: 
+          name: 
+          command: | 
+            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            aws ecr list-images --repository-name scala-maven
 
 workflows:
   version: 2.1
@@ -106,21 +137,6 @@ workflows:
     - build:
         requires:
           - test
-        filters:
-          branches:
-            only:
-            - master
-            - develop
-    - aws-ecr/build-and-push-image:
-        account-url: AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME
-        create-repo: false
-        dockerfile: Dockerfile
-        path: .
-        region: AWS_REGION_ENV_VAR_NAME 
-        repo: scala-maven
-        tag: 'AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME/scala-maven:CIRCLE_BRANCH'
-        requires:
-          - build
         filters:
           branches:
             only:

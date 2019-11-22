@@ -1,6 +1,9 @@
 version: 2.1 
 general:
 
+orbs:
+  aws-ecr: circleci/aws-ecr@6.5.0
+  
 jobs:
   test:
 
@@ -67,7 +70,7 @@ jobs:
           paths:
             - archieve
 
-  build:
+  build_and_push_image:
     
     working_directory: ~/repo 
 
@@ -93,8 +96,6 @@ jobs:
       - store_artifacts:
           path: ~/repo/workspace/archieve/
           destination: JARS
-          
-  build_and_push_image:
      
       - aws-ecr/build-and-push-image:
           account-url: AWS_ECR_ACCOUNT_URL
@@ -117,17 +118,9 @@ workflows:
   test-and-build:
     jobs:
     - test
-    - build:
-        requires:
-          - test
-        filters:
-          branches:
-            only:
-            - master
-            - develop
     - aws-ecr/build-and-push-image:
          requires:
-          - build
+          - test
          filters:
           branches:
             only:

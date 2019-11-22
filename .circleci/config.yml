@@ -119,11 +119,11 @@ workflows:
             - master
             - develop
     - aws-ecr/build-and-push-image:
-        account-url: $AWS_ECR_ACCOUNT_URL
+        account-url: AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME
         create-repo: false
         dockerfile: Dockerfile
         path: .
-        region: $AWS_DEFAULT_REGION
+        region: $AWS_DEFAULT_REGION_ENV_VAR_NAME
         repo: scala-maven
         tag: '${CIRCLE_BRANCH},myECRRepoTag'
         requires:

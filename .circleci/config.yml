@@ -98,13 +98,6 @@ jobs:
           destination: JARS
                
 
-# show all docker images
-      - run: 
-          name: 
-          command: | 
-            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-            aws ecr list-images --repository-name scala-maven
-
 workflows:
   version: 2.1
   test-and-build:

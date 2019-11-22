@@ -147,12 +147,11 @@ workflows:
             - master
             - develop
    
-    - nexus-orb/publish:
-         filename: "~/repo/workspace/archive/*.jar"
-         attributes: "-CgroupId=com.example -CartifactId=myapp -Cversion=1.3 -Aextension=jar"
-         username: "${NEXUS_RM_USERNAME}"
-         password: "${NEXUS_RM_PASSWORD}"
-         serverurl: "http://54.225.42.94:8081/repository/scala-maven-nexus/"
-         requires:
-           - build
-      
+    - nexus-orb/install
+        requires:
+          - build
+        filters:
+          branches:
+            only:
+            - master
+            - develop

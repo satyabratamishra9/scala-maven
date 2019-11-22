@@ -52,7 +52,7 @@ jobs:
 
       - run: 
           name: create package
-          command: mvn clean install -Dmaven.test.skip=true -Dbuild.number=${BUILD_NUMBER}
+          command: mvn clean install -Dmaven.test.skip=true -Dbuild.number=$CIRCLE_BUILD_NUM
 
       - run:
           name: save package to an archive

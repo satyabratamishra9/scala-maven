@@ -98,12 +98,12 @@ jobs:
           destination: JARS
      
       - aws-ecr/build-and-push-image:
-          account-url: AWS_ECR_ACCOUNT_URL
+          account-url: $AWS_ECR_ACCOUNT_URL
           create-repo: false
           dockerfile: Dockerfile
           path: .
-          region: AWS_DEFAULT_REGION
-          repo: ECR_REPOSITORY_NAME
+          region: $AWS_DEFAULT_REGION
+          repo: $ECR_REPOSITORY_NAME
           tag: '${CIRCLE_BRANCH},myECRRepoTag'
 
 # show all docker images

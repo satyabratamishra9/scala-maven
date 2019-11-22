@@ -35,7 +35,7 @@ jobs:
 
       # check code quality
       - run:
-          name: Install Sonarqube scanner 
+          name: Install Sonarqube scanner
           command: |
              wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip
              unzip sonar-scanner-cli-3.2.0.1227-linux.zip
@@ -52,7 +52,7 @@ jobs:
 
       - run: 
           name: create package
-          command: mvn clean install -Dmaven.test.skip=true -Dbuild.number=$CIRCLE_BUILD_NUM
+          command: mvn clean install -Dmaven.test.skip=true
 
       - run:
           name: save package to an archive
@@ -93,6 +93,24 @@ jobs:
       - store_artifacts:
           path: ~/repo/workspace/archieve/
           destination: JARS
+          
+  build_and_push_image:
+     
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          create-repo: false
+          dockerfile: Dockerfile
+          path: .
+          region: AWS_DEFAULT_REGION
+          repo: ECR_REPOSITORY_NAME
+          tag: '${CIRCLE_BRANCH},myECRRepoTag'
+
+# show all docker images
+      - run: 
+          name: 
+          command: | 
+            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+            aws ecr list-images --repository-name scala-maven
 
 workflows:
   version: 2.1
@@ -107,3 +125,13 @@ workflows:
             only:
             - master
             - develop
+    - aws-ecr/build-and-push-image:
+         requires:
+          - build
+         filters:
+          branches:
+            only:
+            - master
+            - develop
+            
+    

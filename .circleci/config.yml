@@ -97,15 +97,6 @@ jobs:
           path: ~/repo/workspace/archive/
           destination: JARS
           
-      - nexus-orb/install
-
-      - nexus-orb/publish:
-          filename: "~/repo/workspace/archive/*.jar"
-          attributes: "-CgroupId=com.example -CartifactId=myapp -Cversion=1.3 -Aextension=jar"
-          username: "${NEXUS_RM_USERNAME}"
-          password: "${NEXUS_RM_PASSWORD}"
-          serverurl: "http://54.225.42.94:8081/repository/scala-maven-nexus/"
-      
       - run:
           name: install aws cli
           command: |
@@ -155,6 +146,15 @@ workflows:
             only:
             - master
             - develop
-    - nexus-orb/nexusjob:
+    - nexus-orb/install:
+        requires:
+          - build
+    - nexus-orb/publish:
+         filename: "~/repo/workspace/archive/*.jar"
+         attributes: "-CgroupId=com.example -CartifactId=myapp -Cversion=1.3 -Aextension=jar"
+         username: "${NEXUS_RM_USERNAME}"
+         password: "${NEXUS_RM_PASSWORD}"
+         serverurl: "http://54.225.42.94:8081/repository/scala-maven-nexus/"
          requires:
-           - build
+           - nexus-orb/install
+      

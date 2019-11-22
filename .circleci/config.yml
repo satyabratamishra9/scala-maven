@@ -116,7 +116,7 @@ workflows:
         create-repo: false
         dockerfile: Dockerfile
         path: .
-        region: AWS_DEFAULT_REGION_ENV_VAR_NAME
+        region: AWS_REGION_ENV_VAR_NAME
         repo: scala-maven
         tag: '${CIRCLE_BRANCH},myECRRepoTag'
         requires:

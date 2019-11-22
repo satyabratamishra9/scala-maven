@@ -92,8 +92,8 @@ jobs:
   
       - store_artifacts:
           path: ~/repo/workspace/archieve/
-          destination: JARS    
-          
+          destination: JARS
+      
       - run:
           name: install aws cli
           command: |
@@ -105,7 +105,7 @@ jobs:
       - setup_remote_docker
               # docker_layer_caching: true
 
-      # build docker image
+# build docker image
       - run:
           name: Docker build
           command: |
@@ -123,13 +123,13 @@ jobs:
             docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:${CIRCLE_BRANCH}
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${CIRCLE_BRANCH}
 
-      # show all docker images
+# show all docker images
       - run: 
           name: 
           command: | 
             eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
             aws ecr list-images --repository-name scala-maven
-      
+
 workflows:
   version: 2.1
   test-and-build:
@@ -143,17 +143,3 @@ workflows:
             only:
             - master
             - develop
-   # - aws-ecr/build-and-push-image:
-   #     account-url: AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME
-   #     create-repo: false
-   #     path: .
-   #     region: AWS_REGION_ENV_VAR_NAME
-   #     repo: scala-maven
-   #     tag: 'latest'
-   #     requires:
-   #       - build
-   #     filters:
-   #       branches:
-   #         only:
-   #         - master
-   #         - develop

@@ -119,7 +119,7 @@ workflows:
          repo: scala-maven
          tag: '{CIRCLE_BRANCH}'
          requires:
-          - test
+          - build
          filters:
             branches:
             only:

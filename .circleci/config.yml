@@ -127,7 +127,7 @@ workflows:
         repo: scala-maven
         tag: '${CIRCLE_BRANCH},myECRRepoTag'
         requires:
-          - test
+          - build
         filters:
           branches:
             only:

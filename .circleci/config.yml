@@ -57,15 +57,15 @@ jobs:
       - run:
           name: save package to an archive
           command: |
-            mkdir -p archieve
+            mkdir -p archive
             pwd
             ls -lart ~/repo/target
-            cp -r ~/repo/target/*.jar ~/repo/archieve/
+            cp -r ~/repo/target/*.jar ~/repo/archive/
             
       - persist_to_workspace:
           root: .
           paths:
-            - archieve
+            - archive
 
   build:
     
@@ -91,7 +91,7 @@ jobs:
             - v1-dependencies-
   
       - store_artifacts:
-          path: ~/repo/workspace/archieve/
+          path: ~/repo/workspace/archive/
           destination: JARS
       
       - run:
@@ -109,8 +109,11 @@ jobs:
       - run:
           name: Docker build
           command: |
-            cp ~/repo/Dockerfile ~/repo/workspace/archieve/
-            cd ~/repo/workspace/archieve/
+            ls
+            cp ~/repo/Dockerfile ~/repo/workspace/archive/
+            ls -lrt ~/repo/workspace/archive/
+            cd ~/repo/workspace/archive/
+            ls
             docker build -t scala-maven .
             docker images
             
@@ -118,7 +121,7 @@ jobs:
       - run:
           name: Push to ECR
           command: |
-            cd ~/repo/workspace/archieve/
+            cd ~/repo/workspace/archive/
             eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
             docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:${CIRCLE_BRANCH}
             docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${CIRCLE_BRANCH}

@@ -118,7 +118,7 @@ workflows:
         path: .
         region: AWS_REGION_ENV_VAR_NAME 
         repo: scala-maven
-        tag: '${CIRCLE_BRANCH},myECRRepoTag'
+        tag: 'AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME/scala-maven:CIRCLE_BRANCH'
         requires:
           - build
         filters:

@@ -103,7 +103,7 @@ jobs:
           dockerfile: Dockerfile
           path: .
           region: $AWS_DEFAULT_REGION
-          repo: $ECR_REPOSITORY_NAME
+          repo: scala-maven
           tag: '${CIRCLE_BRANCH},myECRRepoTag'
 
 # show all docker images

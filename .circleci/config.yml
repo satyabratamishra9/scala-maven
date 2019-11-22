@@ -35,7 +35,7 @@ jobs:
 
       # check code quality
       - run:
-          name: Install Sonarqube scanner
+          name: Install Sonarqube scanner 
           command: |
              wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip
              unzip sonar-scanner-cli-3.2.0.1227-linux.zip

@@ -111,17 +111,16 @@ workflows:
             - master
             - develop
     - aws-ecr/build-and-push-image:
-         account-url: AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME
-         create-repo: false
-         path: .
-         profile-name: myProfileName
-         region: AWS_REGION_ENV_VAR_NAME
-         repo: scala-maven
-         tag: '{CIRCLE_BRANCH}'
-         requires:
+        account-url: AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME
+        create-repo: false
+        path: .
+        region: AWS_REGION_ENV_VAR_NAME
+        repo: scala-maven
+        tag: '{CIRCLE_BRANCH}'
+        requires:
           - build
-         filters:
-            branches:
+        filters:
+          branches:
             only:
             - master
             - develop

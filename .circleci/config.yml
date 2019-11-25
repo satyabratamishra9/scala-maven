@@ -1,9 +1,6 @@
 version: 2.1
 general:
 
-orbs:
-  nexus-platform-orb: sonatype/nexus-platform-orb@1.0.6
-
 jobs:
 
   test:
@@ -71,9 +68,12 @@ jobs:
           paths:
             - archive
 
-  nexus-platform-orb/nexusjob:
+  nexusjob:
 
-      executor: nexus-platform-cli
+    executors:
+      nexus-platform-cli:
+        docker:
+        - image: sonatype/nexus-platform-cli:0.0.20191018-130334.c9f67e0
 
       steps:
       - publish:
@@ -152,7 +152,7 @@ workflows:
   test-and-build:
     jobs:
     - test
-    - build:
+    - nexusjob:
         requires:
           - test
         filters:
@@ -160,9 +160,9 @@ workflows:
             only:
             - master
             - develop
-    - nexus-platform-orb/nexusjob:
+    - build:
         requires:
-          - build
+          - nexusjob
         filters:
           branches:
             only:

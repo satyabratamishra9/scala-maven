@@ -70,21 +70,48 @@ jobs:
 
   nexusjob:
 
-    executors:
-      nexus-platform-cli:
-        docker:
-        - image: sonatype/nexus-platform-cli:0.0.20191018-130334.c9f67e0
+      docker:
+      - image: sonatype/nexus-platform-cli:0.0.20191018-130334.c9f67e0
 
       steps:
-      - publish:
-          username: '${NEXUS_RM_USERNAME}'
-          password: '${NEXUS_RM_PASSWORD}'
-          serverurl: 'http://107.21.74.226:8081/repository/scala-maven-nexus/'
-          filename: '/archive/scala-maven-example-1.0.0-SNAPSHOT.jar'
-          format: 'maven2'
-          attributes: '-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar'
-          repository: 'scala-maven-nexus'
-          workspace: '~/repo/workspace/'
+      
+      - attach_workspace:
+          at: workspace
+      
+      - run: 
+          name: Installs the nexus-platform-api and CLI script
+          command: |
+            curl -L https://dl.bintray.com/groovy/maven/apache-groovy-binary-2.5.3.zip -o apache-groovy-binary.zip
+            mkdir -p ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin || true
+            curl -L https://raw.githubusercontent.com/sonatype-nexus-community/docker-nexus-platform-cli/master/src/main/groovy/NexusPublisher.groovy -o ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy
+            unzip apache-groovy-binary.zip
+            mv groovy-2.5.3 >> groovy
+            echo PATH=${PATH}:${CIRCLE_WORKING_DIRECTORY}/groovy/bin/ > setup.sh
+        
+      - run:
+          name: Publish artifacts to Nexus Respository Manager
+          command: | 
+            >
+            [[ -r setup.sh ]] && . setup.sh ;
+            groovy ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy
+            --username "${NEXUS_RM_USERNAME}"
+            --password "${NEXUS_RM_PASSWORD}"
+            --serverurl "http://107.21.74.226:8081/repository/scala-maven-nexus/"
+            --filename $(if [ ! -z "workspace" ] ; then echo "workspace"/ ; fi)/archive/scala-maven-example-1.0.0-SNAPSHOT.jar
+            --format "maven2"
+            --repository "scala-maven-nexus"
+            "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar"
+
+
+            
+  #          username: '${NEXUS_RM_USERNAME}'
+  #          password: '${NEXUS_RM_PASSWORD}'
+  #          serverurl: 'http://107.21.74.226:8081/repository/scala-maven-nexus/'
+  #          filename: '/archive/scala-maven-example-1.0.0-SNAPSHOT.jar'
+  #          format: 'maven2'
+  #          attributes: '-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar'
+  #          repository: 'scala-maven-nexus'
+  #          workspace: '~/repo/workspace/'
 
   build:
 
@@ -123,7 +150,6 @@ jobs:
 # build docker image
       - run:
           name: Docker build
-            docker images
           command: |
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/

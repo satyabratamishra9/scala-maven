@@ -76,10 +76,6 @@ jobs:
       executor: nexus-platform-cli
 
       steps:
-      
-      - attach_workspace:
-          at: workspace
-      
       - publish:
           username: '${NEXUS_RM_USERNAME}'
           password: '${NEXUS_RM_PASSWORD}'
@@ -156,17 +152,17 @@ workflows:
   test-and-build:
     jobs:
     - test
-    - nexus-platform-orb/nexusjob:
+    - build:
         requires:
-          - test:
+          - test
         filters:
           branches:
             only:
             - master
             - develop
-     - build:
+    - nexus-platform-orb/nexusjob:
         requires:
-          - nexus-platform-orb/nexusjob
+          - build
         filters:
           branches:
             only:

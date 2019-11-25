@@ -100,7 +100,9 @@ jobs:
           --filename $(if [ ! -z "workspace" ] ; then echo "workspace"/ ; fi)/archive/scala-maven-example-1.0.0-SNAPSHOT.jar
           --format "maven2"
           --repository "scala-maven-nexus"
-          "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar"
+         
+         
+    #     "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar"
 
 
             

@@ -97,10 +97,11 @@ jobs:
           --username "${NEXUS_RM_USERNAME}"
           --password "${NEXUS_RM_PASSWORD}"
           --serverurl "http://107.21.74.226:8081/repository/scala-maven-nexus/"
-          --filename $(if [ ! -z "workspace" ] ; then echo "workspace"/ ; fi)/archive/scala-maven-example-1.0.0-SNAPSHOT.jar
+          --filename $(if [ ! -z "workspace" ] ; then echo "workspace"/ ; fi)"/archive/scala-maven-example-1.0.0-SNAPSHOT.jar"
           --format "maven2"
           --repository "scala-maven-nexus" "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar"
-            
+
+  
   #          username: '${NEXUS_RM_USERNAME}'
   #          password: '${NEXUS_RM_PASSWORD}'
   #          serverurl: 'http://107.21.74.226:8081/repository/scala-maven-nexus/'

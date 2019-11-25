@@ -158,7 +158,7 @@ workflows:
     - test
     - nexus-platform-orb/nexusjob:
         requires:
-          - test
+          - test:
         filters:
           branches:
             only:

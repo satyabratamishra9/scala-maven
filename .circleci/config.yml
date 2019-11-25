@@ -70,8 +70,10 @@ jobs:
 
   nexusjob:
 
+      working_directory: ~/repo
+
       docker:
-      - image: sonatype/nexus-platform-cli:0.0.20191018-130334.c9f67e0
+      - image: circleci/openjdk:8-jdk
 
       steps:
       
@@ -81,6 +83,7 @@ jobs:
       - run: 
           name: Installs the nexus-platform-api and CLI script
           command: |
+            
             curl -L https://dl.bintray.com/groovy/maven/apache-groovy-binary-2.5.3.zip -o apache-groovy-binary.zip
             mkdir -p ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin || true
             curl -L https://raw.githubusercontent.com/sonatype-nexus-community/docker-nexus-platform-cli/master/src/main/groovy/NexusPublisher.groovy -o ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy

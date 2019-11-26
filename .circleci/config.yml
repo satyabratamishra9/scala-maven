@@ -94,16 +94,28 @@ jobs:
             mv groovy-2.5.3 groovy
             echo PATH=${PATH}:${CIRCLE_WORKING_DIRECTORY}/groovy/bin/ > setup.sh
         
-      - run: >
-          [[ -r setup.sh ]] && . setup.sh ;
-          groovy ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy 
-          --username "admin" 
-          --password "admin" 
-          --serverurl "http://34.236.146.0:8081/repository/scala-maven-nexus/" 
-          --filename "~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar" 
-          --format "maven2" 
-          --repository "scala-maven-nexus" "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar"
-  
+      #- run: >
+      #    [[ -r setup.sh ]] && . setup.sh ;
+       #   groovy ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy 
+      #    --username "admin" 
+      #    --password "admin" 
+      #    --serverurl "http://34.236.146.0:8081/repository/scala-maven-nexus/" 
+      #    --filename "~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar" 
+      #    --format "maven2" 
+      #    --repository "scala-maven-nexus" "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar"
+      - run:
+          name: publish artifact
+          command: |  
+            curl -v \
+            -F "r=scala-maven-nexus" \
+            -F "g=com.jesperdj" \
+            -F "a=scala-maven-example" \
+            -F "v=1.0.0" \
+            -F "p=jar" \
+            -F "file=~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar " \
+            -u admin:admin \
+            http://34.236.146.0:8081/repository/scala-maven-nexus/
+      
   #          username: '${NEXUS_RM_USERNAME}'
   #          password: '${NEXUS_RM_PASSWORD}'
   #          serverurl: 'http://107.21.74.226:8081/repository/scala-maven-nexus/'

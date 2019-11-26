@@ -93,18 +93,15 @@ jobs:
             unzip apache-groovy-binary.zip
             mv groovy-2.5.3 groovy
             echo PATH=${PATH}:${CIRCLE_WORKING_DIRECTORY}/groovy/bin/ > setup.sh
-            ls -lrt workspace/archive
-            echo ${CIRCLE_WORKING_DIRECTORY}
-            ls -lrt ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/
         
       - run: >
           [[ -r setup.sh ]] && . setup.sh ;
-          groovy ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy
-          --username "${NEXUS_RM_USERNAME}"
-          --password "${NEXUS_RM_PASSWORD}"
-          --serverurl "http://107.21.74.226:8081/repository/scala-maven-nexus/"
-          --filename "~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar"
-          --format "maven2"
+          groovy ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy \
+          --username "${NEXUS_RM_USERNAME}" \
+          --password "${NEXUS_RM_PASSWORD}" \
+          --serverurl "http://107.21.74.226:8081/repository/scala-maven-nexus/" \
+          --filename "~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar" \
+          --format "maven2" \
           --repository "scala-maven-nexus" "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar"
 
   

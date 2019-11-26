@@ -127,7 +127,7 @@ jobs:
           
       - run:
           name: upload artifacts
-          command:
+          command: |
              touch .nexus_cli
              echo 'url:"http://my-nexus-server/nexus/" > .nexus_cli'
              echo 'repository:"my-repository-id" >> .nexus_cli'

@@ -154,7 +154,7 @@ jobs:
              -DartifactId=scala-maven-example \
              -Dversion=1.0.0 \
              -Dpackaging=jar \
-             -Dfile=~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar \
+             -Dfile=/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar \
              -DgeneratePom=true \
              -DupdateReleaseInfo=true \
              -Durl="https://admin:admin@http://34.236.146.0:8081/repository/scala-maven-nexus/"

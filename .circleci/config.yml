@@ -121,7 +121,7 @@ jobs:
       - run:
           name: install nexus cli
           command: |
-             sudo apt-get install rubygems-integration
+             sudo aptitude install libgemplugin-ruby
              sudo gem install nexus_cli
           
       - run:

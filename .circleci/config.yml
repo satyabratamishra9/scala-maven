@@ -149,7 +149,7 @@ jobs:
       - run:
           name: publish artifact
           command: |
-             mvn deploy:deploy-file \
+             mvn -Dmaven.install.skip=true -Dmaven.test.skip=true deploy:deploy-file \
              -DgroupId=com.jesperdj \
              -DartifactId=scala-maven-example \
              -Dversion=1.0.0 \

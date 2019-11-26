@@ -118,24 +118,23 @@ jobs:
     #        -u admin:admin \
     #        http://34.236.146.0:8081/repository/scala-maven-nexus/
     
-      - run:
-          name: install nexus cli
-          command: |
-             sudo apt update
-             sudo apt install ruby-full
-             sudo gem install nexus_cli
+    #  - run:
+    #      name: install nexus cli
+    #      command: |
+    #         sudo apt update
+    #         sudo apt install ruby-full
+    #         sudo gem install nexus_cli
           
-      - run:
-          name: upload artifacts
-          command: |
-             touch .nexus_cli
-             echo 'url: "http://my-nexus-server/nexus/"' > .nexus_cli
-             echo 'repository: "my-repository-id"' >> .nexus_cli
-             echo 'username: "admin"' >> .nexus_cli
-             echo 'password: "admin"' >> .nexus_cli
+    #  - run:
+    #      name: upload artifacts
+    #      command: |
+    #         touch .nexus_cli
+    #         echo 'url: "http://my-nexus-server/nexus/"' > .nexus_cli
+    #         echo 'repository: "my-repository-id"' >> .nexus_cli
+    #         echo 'username: "admin"' >> .nexus_cli
+    #         echo 'password: "admin"' >> .nexus_cli
              
-             chmod +x .nexus_cli
-             ./nexus-cli push_artifact com.jesperdj.scala-maven-example:scala-maven-example:jar:1.0.0 ~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar
+    #         nexus-cli push_artifact com.jesperdj.scala-maven-example:scala-maven-example:jar:1.0.0 ~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar
 
            
       
@@ -147,6 +146,18 @@ jobs:
   #          attributes: '-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar'
   #          repository: 'scala-maven-nexus'
   #          workspace: '~/repo/workspace/'
+      - run:
+          name: publish artifact
+          command: |
+             mvn deploy:deploy-file \
+             -DgroupId=com.jesperdj \
+             -DartifactId=scala-maven-example \
+             -Dversion=1.0.0 \
+             -Dpackaging=jar \
+             -Dfile=~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar \
+             -DgeneratePom=true \
+             -DupdateReleaseInfo=true \
+             -Durl="https://admin:admin@http://34.236.146.0:8081/repository/scala-maven-nexus/"
 
   build:
 

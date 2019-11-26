@@ -121,8 +121,8 @@ jobs:
       - run:
           name: install nexus cli
           command: |
-             apt-get install rubygems-integration
-             gem install nexus_cli
+             sudo apt-get install rubygems-integration
+             sudo gem install nexus_cli
           
       - run:
           name: upload artifacts

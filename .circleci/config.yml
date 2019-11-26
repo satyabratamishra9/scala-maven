@@ -90,6 +90,8 @@ jobs:
             unzip apache-groovy-binary.zip
             mv groovy-2.5.3 groovy
             echo PATH=${PATH}:${CIRCLE_WORKING_DIRECTORY}/groovy/bin/ > setup.sh
+            ls -lrt workspace
+            echo ${CIRCLE_WORKING_DIRECTORY}
         
       - run: >
           [[ -r setup.sh ]] && . setup.sh ;

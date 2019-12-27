@@ -282,9 +282,14 @@ workflows:
         filters:
           tags:
             only: /^v.*/
+          branches:
+              ignore: /.*/
     - deploy:
         requires:
           - build
         filters:
           tags:
-            only: /^v.*/          
+            only: /^v.*/ 
+          branches:
+              ignore: /.*/
+              

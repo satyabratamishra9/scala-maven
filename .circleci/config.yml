@@ -211,7 +211,7 @@ jobs:
 
 workflows:
   version: 2.1
-  untagged-build:
+  test-and-build:
     jobs:
     - test
     - build:
@@ -222,10 +222,12 @@ workflows:
             only:
             - develop
             - master
-  tagged-build:
+  prod-deploy:
     jobs:
     - build:
         filters:
           tags:
             only: /^v.*/
+            branches:
+              ignore: /.*/
      

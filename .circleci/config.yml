@@ -201,7 +201,7 @@ jobs:
                 docker build -t scala-maven:$version .
               else
           # version=$({CIRCLE_BRANCH}{date})
-                version=$(date)
+                version=$(CIRCLE_BRANCH)
                 docker build -t scala-maven:$version .
               fi
           

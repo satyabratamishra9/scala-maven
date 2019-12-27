@@ -146,18 +146,18 @@ jobs:
   #          attributes: '-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar'
   #          repository: 'scala-maven-nexus'
   #          workspace: '~/repo/workspace/'
-      - run:
-          name: publish artifact
-          command: |
-             mvn -Dmaven.install.skip=true -Dmaven.test.skip=true deploy:deploy-file \
-             -DgroupId=com.jesperdj \
-             -DartifactId=scala-maven-example \
-             -Dversion=1.0.0 \
-             -Dpackaging=jar \
-             -Dfile=/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar \
-             -DgeneratePom=true \
-             -DupdateReleaseInfo=true \
-             -Durl="https://admin:admin@http://34.236.146.0:8081/repository/scala-maven-nexus/"
+  #    - run:
+  #        name: publish artifact
+  #        command: |
+  #           mvn -Dmaven.install.skip=true -Dmaven.test.skip=true deploy:deploy-file \
+  #           -DgroupId=com.jesperdj \
+  #           -DartifactId=scala-maven-example \
+  #           -Dversion=1.0.0 \
+  #           -Dpackaging=jar \
+  #           -Dfile=/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar \
+  #           -DgeneratePom=true \
+  #           -DupdateReleaseInfo=true \
+  #           -Durl="https://admin:admin@http://34.236.146.0:8081/repository/scala-maven-nexus/"
 
   build:
 

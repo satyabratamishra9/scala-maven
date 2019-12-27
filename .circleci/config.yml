@@ -208,6 +208,34 @@ jobs:
 #            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
 #            aws ecr list-images --repository-name scala-maven
 
+  deploy:
+  
+    working_directory: ~/repo
+
+    docker:
+    - image: circleci/openjdk:8-jdk
+
+    environment:
+      # Customize the JVM maximum heap size
+      JVM_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+  #    - attach_workspace:
+  #        at: workspace
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # use latest cache if no exact match found
+            - v1-dependencies- 
+            
+      - run:
+          name: show Hi
+          command: echo "Hi"
+  
+
 
 workflows:
   version: 2.1
@@ -224,7 +252,7 @@ workflows:
             - master
   prod-deploy:
     jobs:
-    - build:
+    - deploy:
         filters:
           tags:
             only: /^v.*/

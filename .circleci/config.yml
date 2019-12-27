@@ -256,16 +256,33 @@ workflows:
           - test
         filters:
           branches:
+            only:                         
+            - develop
+    - deploy:
+        requires:
+          - build
+        filters:
+          branches:
             only:
             - develop
-            ignore: /.*/
-          tags:
-            only: /^v.*/
+            
   prod-deploy:
     jobs:
-    - deploy:
+    - build:
+        requires:
+          - test
         filters:
           tags:
             only: /^v.*/
           branches:
-            ignore: /.*/
+            only:
+            - master
+    - deploy:
+        requires:
+          - build
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            only:
+            - master

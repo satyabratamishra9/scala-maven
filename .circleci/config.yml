@@ -71,17 +71,7 @@ jobs:
           paths:
             - archive
 
-  nexusjob:
-
-      working_directory: ~/repo
-
-      docker:
-      - image: circleci/openjdk:8-jdk
-
-      steps:
-      
-      - attach_workspace:
-          at: workspace
+  # -----------------------------------------------
       
       - run: 
           name: Installs the nexus-platform-api and CLI script
@@ -199,24 +189,24 @@ jobs:
           command: |
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/
-            docker build -t scala-maven .
+            docker build -t scala-maven:CIRCLE_TAG .
             docker images
 
-      # pushing to ECR
-      - run:
-          name: Push to ECR
-          command: |
-            cd ~/repo/workspace/archive/
-            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-            docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:${CIRCLE_BRANCH}
-            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${CIRCLE_BRANCH}
+     # # pushing to ECR
+     # - run:
+     #     name: Push to ECR
+     #     command: |
+     #       cd ~/repo/workspace/archive/
+     #       eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+     #       docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:${CIRCLE_BRANCH}
+     #       docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${CIRCLE_BRANCH}
 
 # show all docker images
-      - run:
-          name:
-          command: |
-            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-            aws ecr list-images --repository-name scala-maven
+#      - run:
+#          name:
+#          command: |
+#            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+#            aws ecr list-images --repository-name scala-maven
 
 
 workflows:
@@ -224,19 +214,13 @@ workflows:
   test-and-build:
     jobs:
     - test
-    - nexusjob:
+    - build:
         requires:
           - test
         filters:
           branches:
             only:
-            - master
-            - develop
-    - build:
-        requires:
-          - nexusjob
-        filters:
-          branches:
-            only:
-            - master
+            - master:
+            tags:
+              only: /^v.*/
             - develop

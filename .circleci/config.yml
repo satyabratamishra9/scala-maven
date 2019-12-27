@@ -200,8 +200,7 @@ jobs:
                 version=$(git log -1 --pretty=%B)
                 docker build -t scala-maven:$version .
               else
-          # version=$({CIRCLE_BRANCH}{date})
-                version=$(CIRCLE_BRANCH)
+                version=${CIRCLE_BRANCH}{date}
                 docker build -t scala-maven:$version .
               fi
           
@@ -272,4 +271,3 @@ workflows:
             only: /^v.*/
           branches:
             ignore: /.*/
-     

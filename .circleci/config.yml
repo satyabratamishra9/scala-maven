@@ -191,6 +191,19 @@ jobs:
             cd ~/repo/workspace/archive/
             docker build -t scala-maven:CIRCLE_TAG .
             docker images
+            
+      - run:
+          name:
+          command: |
+              if git log -1 --pretty=%B | grep "^v.*";
+              then
+                version=$(git log -1 --pretty=%B)
+                docker build -t scala-maven:$version .
+              else
+                version=$({CIRCLE_BRANCH}{date})
+                docker build -t scala-maven:$version .
+              fi
+          
 
      # # pushing to ECR
      # - run:

@@ -250,7 +250,10 @@ workflows:
   version: 2.1
   test-and-build:
     jobs:
-    - test
+    - test:
+        filters:
+          branches:
+            ignore: master
     - build:
         requires:
           - test

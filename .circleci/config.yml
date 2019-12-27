@@ -258,7 +258,9 @@ workflows:
           branches:
             only:
             - develop
-            - master
+            ignore: /.*/
+          tags:
+            only: /^v.*/
   prod-deploy:
     jobs:
     - deploy:

@@ -291,5 +291,5 @@ workflows:
           tags:
             only: /^v.*/ 
           branches:
-              ignore: /.*/
+              ignore: /.*/ 
               

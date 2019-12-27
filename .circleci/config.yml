@@ -268,7 +268,11 @@ workflows:
             
   prod-deploy:
     jobs:
-    - test
+    - test:
+        filters:
+          branches:
+            only:                         
+            - master
     - build:
         requires:
           - test

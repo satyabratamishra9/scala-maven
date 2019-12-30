@@ -198,9 +198,9 @@ jobs:
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/
             
-            if git log -1 --pretty=%B | grep "^v.*";
+            if git describe --abbrev=0 --tags | grep "^v.*";
               then
-                version=$(git log -1 --pretty=%B)
+                version=$(git describe --abbrev=0 --tags)
                 docker build -t scala-maven:$version .
               else
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"

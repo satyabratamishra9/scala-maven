@@ -30,7 +30,7 @@ jobs:
       # run tests
       - run:
           name: run unit tests, calculate test coverage & generate reports
-          command: mvn clean surefire-report:report scoverage:check scoverage:report-only
+          command: mvn clean surefire-report:report scoverage:check scoverage:report-only -e
           
       - run:
           name: generate css for the surefire reports

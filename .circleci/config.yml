@@ -242,7 +242,7 @@ jobs:
             
       - run:
           name: show Hi
-          command: echo "Hi"
+          command: git describe --abbrev=0 --tags
   
 
 

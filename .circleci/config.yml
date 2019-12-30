@@ -242,15 +242,7 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
-            - v1-dependencies- 
-            
-      - run:
-          name: show Hi
-          command: git describe --abbrev=0 --tags
-          
-      - run :
-          name: show logs
-          command: git log -1 --pretty=%B | grep "^v.*"
+            - v1-dependencies-             
   
 
 workflows:

@@ -27,6 +27,9 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/scala</sourceDirectory>
+        <testSourceDirectory>src/test/scala</testSourceDirectory>
+             
         <plugins>
             <!-- Configure maven-compiler-plugin to use the desired Java version -->
             <plugin>
@@ -46,7 +49,7 @@
                 <configuration>
                     <minimumCoverage>50</minimumCoverage>
                     <!--<failOnMinimumCoverage>true</failOnMinimumCoverage>-->
-                    <scalaVersion>2.12.8</scalaVersion>
+                    <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
                 <executions>
                     <execution>
@@ -95,6 +98,25 @@
                     </execution>
                 </executions>
             </plugin -->
+                 
+            <plugin>
+                <groupId>org.scalatest</groupId>
+                <artifactId>scalatest-maven-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                    <junitxml>.</junitxml>
+                    <filereports>WDF TestSuite.txt</filereports>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- Use scala-maven-plugin for Scala support -->
             <plugin>

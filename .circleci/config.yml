@@ -247,13 +247,12 @@ jobs:
 
 
 workflows:
-  version: 2.1
+  version: 2
   test-and-build:
     jobs:
     - test:
         filters:
-          branches:
-            ignore: master
+          
     - build:
         requires:
           - test
@@ -273,9 +272,12 @@ workflows:
     jobs:
     - test:
         filters:
+          tags:
+            only: /^v.*/
           branches:
             only:                         
             - master
+            
     - build:
         requires:
           - test

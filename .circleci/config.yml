@@ -226,7 +226,7 @@ jobs:
             
             if git log -1 --pretty=%B | grep "^v.*";
               then
-                version="${CIRCLE_TAG}"
+                version=$(git log -1 --pretty=%B)
                 docker build -t scala-maven:$version .
               else
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"

@@ -182,10 +182,6 @@ jobs:
       - run:
           name: show Hi
           command: git describe --abbrev=0 --tags
-          
-      - run :
-          name: show logs
-          command: git log -1 --pretty=%B | grep "^v.*"
 
       # setup remote env for docker
       - setup_remote_docker

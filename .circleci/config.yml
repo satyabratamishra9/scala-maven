@@ -1,10 +1,11 @@
-version: 2.1 
+version: 2.1
 general:
 
 jobs:
+
   test:
 
-    working_directory: ~/repo 
+    working_directory: ~/repo
 
     docker:
     - image: circleci/openjdk:8-jdk
@@ -12,7 +13,7 @@ jobs:
     environment:
       # Customize the JVM maximum heap size
       JVM_OPTS: -Xmx3200m
-            
+
     steps:
       - checkout
 
@@ -24,27 +25,23 @@ jobs:
             - v1-dependencies-
 
       - run:
-          name: run unit tests 
+          name: run unit tests
           command: mvn clean test
 
-      # save build cache
+     # save build cache
       - save_cache:
           key: v1-dependencies-{{ checksum "pom.xml" }}
           paths:
-            - ~/.m2 
-    
-      #- store_test_results:
-        #  path: ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar 
+            - ~/.m2
 
       # check code quality
       - run:
           name: Install Sonarqube scanner
           command: |
-
              wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip
              unzip sonar-scanner-cli-3.2.0.1227-linux.zip
 
-#      - run:
+   #      - run:
 #          name: Run Sonarqube scanner
 #          command: |
 #                 export SONAR_SCANNER_OPTS="-Xmx512m"
@@ -54,9 +51,28 @@ jobs:
 #                 -Dsonar.host.url=${SONAR_SERVER} \
 #                 -Dsonar.login=${SONARQUBE_TOKEN} $SONAR_SCANNER_OPTS_CUSTOM
 
+      - run:
+          name: create package
+          command: mvn clean install -Dmaven.test.skip=true
+
+      - run:
+          name: save package to an archive
+          command: |
+            mkdir -p archive
+            pwd
+            ls -lart ~/repo/target
+            cp -r ~/repo/target/*.jar ~/repo/archive/
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - archive
+
+ 
+
   build:
-    
-    working_directory: ~/repo 
+
+    working_directory: ~/repo
 
     docker:
     - image: circleci/openjdk:8-jdk
@@ -64,70 +80,136 @@ jobs:
     environment:
       # Customize the JVM maximum heap size
       JVM_OPTS: -Xmx3200m
-            
+
     steps:
       - checkout
+
+      - attach_workspace:
+          at: workspace
 
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
             - v1-dependencies-
- 
-      - run: 
-          name: create package
-          command: mvn clean install -Dmaven.test.skip=true
 
-      # store artifacts
-      - store_artifacts:
-          path: ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar
-      
-      # save build cache
-      - save_cache:
-          key: v1-dependencies-{{ checksum "pom.xml" }}  
-          paths:
-            - ~/.m2
-
-      # create workspace
       - run:
-          name: Workspace
+          name: install aws cli
           command: |
-            mkdir -p workspace
-            pwd
-            ls -lart ~/repo/target
-            cp ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar ~/repo/workspace/scala-maven-example-1.0.0-SNAPSHOT.jar
-            cp ~/repo/Dockerfile ~/repo/workspace
+            sudo apt-get update && sudo apt-get install -qq -y python-pip libpython-dev
+            curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py
+            sudo pip install -q awscli --upgrade
 
-      # setup remote env for docker in paid version
-     # - setup_remote_docker:
+      # setup remote env for docker
+      - setup_remote_docker
               # docker_layer_caching: true
 
-      # setup remote env for docker in free version
-      - setup_remote_docker
-
-      # build docker image
+# build docker image
       - run:
           name: Docker build
           command: |
-            pwd
-            ls -altr
-            cd ~/repo/workspace
-            ls -latr ~/repo/workspace
-            docker build -t circleci/scala-maven .
+            cp ~/repo/Dockerfile ~/repo/workspace/archive/
+            cd ~/repo/workspace/archive/
             
-      # show all docker images
-      - run: docker images 
-      
+            if git log -1 --pretty=%B | grep "^v.*";
+              then
+                version=$(git log -1 --pretty=%B)
+                docker build -t scala-maven:$version .
+              else
+                version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
+                docker build -t scala-maven:$version .
+              fi
+              
+            docker images   
+
+     # # pushing to ECR
+     # - run:
+     #     name: Push to ECR
+     #     command: |
+     #       cd ~/repo/workspace/archive/
+     #       eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+     #       docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:${CIRCLE_BRANCH}
+     #       docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${CIRCLE_BRANCH}
+
+# show all docker images
+#      - run:
+#          name:
+#          command: |
+#            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+#            aws ecr list-images --repository-name scala-maven
+
+  deploy:
+  
+    working_directory: ~/repo
+
+    docker:
+    - image: circleci/openjdk:8-jdk
+
+    environment:
+      # Customize the JVM maximum heap size
+      JVM_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+  #    - attach_workspace:
+  #        at: workspace
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # use latest cache if no exact match found
+            - v1-dependencies- 
+            
+      - run:
+          name: show Hi
+          command: echo "Hi"
+  
+
 workflows:
   version: 2.1
   test-and-build:
     jobs:
-    - test
+    - test:
+        filters:
+          branches:
+            ignore: master
     - build:
         requires:
           - test
         filters:
           branches:
-            only:
-            - master
+            only:                         
             - develop
+    - deploy:
+        requires:
+          - build
+        filters:
+          branches:
+            only:
+            - develop
+            
+  prod-deploy:
+    jobs:
+    - test:
+        filters:
+          branches:
+            only:                         
+            - master
+    - build:
+        requires:
+          - test
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+              ignore: /.*/
+    - deploy:
+        requires:
+          - build
+        filters:
+          tags:
+            only: /^v.*/ 
+          branches:
+              ignore: /.*/ 
+           

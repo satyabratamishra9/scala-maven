@@ -2,7 +2,7 @@ version: 2.1
 general:
 
 orbs:
-  nexus-platform-orb: sonatype/nexus-platform-orb@1.0.6
+  nexus-platform-orb: sonatype/nexus-platform-orb@1.0.6 
 
 jobs:
 

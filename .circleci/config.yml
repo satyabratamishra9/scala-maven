@@ -273,20 +273,23 @@ workflows:
     jobs:
     - test:
         filters:
-          tags:
-            only: /^v.*/
-            
+          branches:
+            only:                         
+            - master
     - build:
         requires:
           - test
         filters:
           tags:
             only: /^v.*/
-          
+          branches:
+              ignore: /.*/
+              
     - deploy:
         requires:
           - build
         filters:
           tags:
             only: /^v.*/ 
-              
+          branches:
+              ignore: /.*/ 

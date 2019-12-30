@@ -242,12 +242,12 @@ jobs:
             
       - run:
           name: show Hi
-          command: echo "Hi"
+          command: git describe --abbrev=0 --tags
   
 
 
 workflows:
-  version: 2
+  version: 2.1
   test-and-build:
     jobs:
     - test
@@ -266,7 +266,7 @@ workflows:
             only:
             - develop
             
-  prod-deploy:
+  run-with-tag:
     jobs:
     - test:
         filters:

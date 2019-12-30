@@ -24,18 +24,32 @@ jobs:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
-            # use latest cache if no exact match found
+            # use latest cache if no exact match found 
             - v1-dependencies-
 
+      # run tests
       - run:
-          name: run unit tests
-          command: mvn clean test
+          name: run unit tests, calculate test coverage & generate reports
+          command: mvn clean surefire-report:report scoverage:check scoverage:report-only
+          
+      - run:
+          name: generate css for the surefire reports
+          command: mvn site -DgenerateReports=false
 
      # save build cache
       - save_cache:
           key: v1-dependencies-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2
+            
+     # HTML test reports
+      - store_artifacts:
+          path: ~/repo/target/site/
+          destination: Reports
+
+     # Scoverage xml reports
+      - store_test_results:
+          path: ~/repo/target
 
       # check code quality
       - run:
@@ -65,6 +79,21 @@ jobs:
             pwd
             ls -lart ~/repo/target
             cp -r ~/repo/target/*.jar ~/repo/archive/
+            
+      # save build cache
+      - save_cache:
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
+            
+      # add package to workspace
+      - run:
+          name: save package to an archive
+          command: |
+            mkdir -p archive/target
+            pwd
+            ls -lart ~/repo/target
+            cp -r ~/repo/target/*.jar ~/repo/archive/target/
 
       - persist_to_workspace:
           root: .
@@ -73,16 +102,16 @@ jobs:
 
   # -----------------------------------------------
       
-      - run: 
-          name: Installs the nexus-platform-api and CLI script
-          command: |
+   #   - run: 
+   #       name: Installs the nexus-platform-api and CLI script
+   #       command: |
             
-            curl -L https://dl.bintray.com/groovy/maven/apache-groovy-binary-2.5.3.zip -o apache-groovy-binary.zip
-            mkdir -p ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin || true
-            curl -L https://raw.githubusercontent.com/sonatype-nexus-community/docker-nexus-platform-cli/master/src/main/groovy/NexusPublisher.groovy -o ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy
-            unzip apache-groovy-binary.zip
-            mv groovy-2.5.3 groovy
-            echo PATH=${PATH}:${CIRCLE_WORKING_DIRECTORY}/groovy/bin/ > setup.sh
+   #         curl -L https://dl.bintray.com/groovy/maven/apache-groovy-binary-2.5.3.zip -o apache-groovy-binary.zip
+   #         mkdir -p ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin || true
+   #         curl -L https://raw.githubusercontent.com/sonatype-nexus-community/docker-nexus-platform-cli/master/src/main/groovy/NexusPublisher.groovy -o ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy
+   #         unzip apache-groovy-binary.zip
+   #         mv groovy-2.5.3 groovy
+   #         echo PATH=${PATH}:${CIRCLE_WORKING_DIRECTORY}/groovy/bin/ > setup.sh
         
       #- run: >
       #    [[ -r setup.sh ]] && . setup.sh ;
@@ -171,6 +200,11 @@ jobs:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
             - v1-dependencies-
+            
+      # publish artifacts 
+      - store_artifacts:
+          path: ~/repo/workspace/archive/target/
+          destination: JARS
 
       - run:
           name: install aws cli
@@ -178,25 +212,21 @@ jobs:
             sudo apt-get update && sudo apt-get install -qq -y python-pip libpython-dev
             curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py
             sudo pip install -q awscli --upgrade
-            
-      - run:
-          name: show Hi
-          command: git describe --abbrev=0 --tags
 
       # setup remote env for docker
       - setup_remote_docker
               # docker_layer_caching: true
 
-# build docker image
+      # build docker image
       - run:
           name: Docker build
           command: |
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/
             
-            if git describe --abbrev=0 --tags | grep "^v.*";
+            if git log -1 --pretty=%B | grep "^v.*";
               then
-                version=$(git describe --abbrev=0 --tags)
+                version=$(git log -1 --pretty=%B)
                 docker build -t scala-maven:$version .
               else
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
@@ -242,8 +272,13 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
-            - v1-dependencies-             
+            - v1-dependencies- 
+            
+      - run:
+          name: show Hi
+          command: echo "Hi"
   
+
 
 workflows:
   version: 2.1

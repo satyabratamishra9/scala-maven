@@ -246,7 +246,7 @@ jobs:
           
       - run :
           name: show logs
-          comand: git log -1 --pretty=%B | grep "^v.*"
+          command: git log -1 --pretty=%B | grep "^v.*"
   
 
 workflows:

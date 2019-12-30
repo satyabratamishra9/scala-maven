@@ -226,8 +226,7 @@ jobs:
             
             if git describe --abbrev=0 --tags | grep "^v.*";
               then
-                version=$(git describe --abbrev=0 --tags)
-                docker build -t scala-maven:$version .
+                docker build -t scala-maven:$CIRCLE_TAG .
               else
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
                 docker build -t scala-maven:$version .

@@ -94,7 +94,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>--!
+            </plugin -->
 
             <!-- Use scala-maven-plugin for Scala support -->
             <plugin>

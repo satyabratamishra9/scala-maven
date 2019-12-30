@@ -273,9 +273,9 @@ workflows:
     jobs:
     - test:
         filters:
-          branches:
-            only:                         
-            - master
+          tags:
+            only: /^v.*/
+            
     - build:
         requires:
           - test

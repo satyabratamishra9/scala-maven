@@ -216,23 +216,28 @@ jobs:
       # setup remote env for docker
       - setup_remote_docker
               # docker_layer_caching: true
+              
+      # docker image versioning
+      - run:
+          name: Docker image version
+          command: |         
+              if git tag -l --points-at HEAD | grep "^v.*";
+              then
+                version=$(git tag -l --points-at HEAD)
+              else
+                version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
+              fi
+      - run:
+          name: version
+          command: echo $version   
 
       # build docker image
       - run:
           name: Docker build
           command: |
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
-            cd ~/repo/workspace/archive/
-            
-            if git tag -l --points-at HEAD | grep "^v.*";
-              then
-                version=$(git tag -l --points-at HEAD)
-                docker build -t scala-maven:$version .
-              else
-                version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
-                docker build -t scala-maven:$version .
-              fi
-              
+            cd ~/repo/workspace/archive/                
+            docker build -t scala-maven:$version .
             docker images   
 
      # # pushing to ECR

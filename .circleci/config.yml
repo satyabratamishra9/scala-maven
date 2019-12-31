@@ -227,6 +227,8 @@ jobs:
               else
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
               fi
+              
+              echo $version
       - run:
           name: version
           command: echo $version   

@@ -248,7 +248,7 @@ jobs:
           command: |
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/                
-            docker build -t scala-maven:$VERSION .
+            docker build -t scala-maven:'cat workspace/version' .
             docker images   
 
      # # pushing to ECR

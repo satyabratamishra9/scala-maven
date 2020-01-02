@@ -184,10 +184,10 @@ jobs:
 
     docker:
     - image: circleci/openjdk:8-jdk
-
+    
     environment:
       # Customize the JVM maximum heap size
-      JVM_OPTS: -Xmx3200m
+      JVM_OPTS: -Xmx3200m  
 
     steps:
       - checkout
@@ -216,23 +216,39 @@ jobs:
       # setup remote env for docker
       - setup_remote_docker
               # docker_layer_caching: true
+              
+      # docker image versioning
+      - run:
+          name: Docker image version
+          command: |         
+              if git tag -l --points-at HEAD | grep "^v.*";
+              then
+                version=$(git tag -l --points-at HEAD)
+              else
+                version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
+              fi
+              
+              echo 'export APP_VERSION=$version' >> $BASH_ENV
+              source $BASH_ENV
+              echo $APP_VERSION > workspace/version
+              
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: workspace
+              
+      - run:
+          name: version
+          command: |
+             cat workspace/version
 
       # build docker image
       - run:
           name: Docker build
           command: |
+            version=`cat workspace/version`
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/
-            
-            if git tag -l --points-at HEAD | grep "^v.*";
-              then
-                version=$(git tag -l --points-at HEAD)
-                docker build -t scala-maven:$version .
-              else
-                version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
-                docker build -t scala-maven:$version .
-              fi
-              
+            docker build -t scala-maven:$version .
             docker images   
 
      # # pushing to ECR

@@ -187,7 +187,8 @@ jobs:
     
     environment:
       # Customize the JVM maximum heap size
-      JVM_OPTS: -Xmx3200m  
+      JVM_OPTS: -Xmx3200m 
+      GIT_HASH: $(echo $CIRCLE_SHA1 | cut -c -7)
 
     steps:
       - checkout
@@ -225,7 +226,7 @@ jobs:
               then
                 version=$(git tag -l --points-at HEAD)
               else
-                version="${CIRCLE_BRANCH}-{CIRCLE_SHA1}"
+                version="${CIRCLE_BRANCH}-${GIT_HASH}"
               fi
               
               echo 'export APP_VERSION=$version' >> $BASH_ENV
@@ -234,12 +235,7 @@ jobs:
               
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
-          at: workspace
-              
-      - run:
-          name: version
-          command: |
-             cat workspace/version
+          at: workspace                
 
       # build docker image
       - run:

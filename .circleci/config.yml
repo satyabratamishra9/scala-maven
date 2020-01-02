@@ -228,12 +228,13 @@ jobs:
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
               fi
               
-              export VERSION=$version >> $BASH_ENV
+              echo 'export VERSION=$version' >> $BASH_ENV
+              source $BASH_ENV
               echo $VERSION
               
       - run:
           name: version
-          command: echo $VERSION   
+          command: echo ${VERSION}   
 
       # build docker image
       - run:

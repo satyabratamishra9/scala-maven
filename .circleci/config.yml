@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 general:
 
 orbs:
@@ -291,7 +291,7 @@ jobs:
 
 
 workflows:
-  version: 2.1
+  version: 2
   test-and-build:
     jobs:
     - test

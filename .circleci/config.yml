@@ -188,7 +188,6 @@ jobs:
     environment:
       # Customize the JVM maximum heap size
       JVM_OPTS: -Xmx3200m  
-      BASH_ENV: /etc/profile
 
     steps:
       - checkout
@@ -235,7 +234,18 @@ jobs:
               
       - run:
           name: version
-          command: echo ${APP_VERSION}   
+          command: echo ${APP_VERSION} 
+          
+      - run:
+          name:
+          command:
+              echo 'export VERSION=123' >> $BASH_ENV
+              sudo source $BASH_ENV
+              echo $VERSION
+              
+      - run:
+          name: version
+          command: echo ${VERSION}
 
       # build docker image
       - run:

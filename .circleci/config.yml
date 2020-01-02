@@ -228,8 +228,7 @@ jobs:
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
               fi
               
-              export VERSION=$(cat $version) >> $BASH_ENV
-              source $BASH_ENV
+              export VERSION=$version >> $BASH_ENV
               echo $VERSION
               
       - run:

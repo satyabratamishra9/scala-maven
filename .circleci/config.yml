@@ -229,7 +229,7 @@ jobs:
               fi
               
               echo 'export APP_VERSION=$version' >> $BASH_ENV
-              sudo source $BASH_ENV
+              source $BASH_ENV
               echo $APP_VERSION
               
       - run:
@@ -240,7 +240,7 @@ jobs:
           name:
           command:
               echo 'export VERSION="123"' >> $BASH_ENV
-              sudo source $BASH_ENV
+              source $BASH_ENV
               echo $VERSION
               
       - run:

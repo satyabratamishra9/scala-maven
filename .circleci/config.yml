@@ -239,17 +239,16 @@ jobs:
       - run:
           name: version
           command: |
-             echo ${APP_VERSION}
              cat workspace/version
 
       # build docker image
       - run:
           name: Docker build
           command: |
+            version=`cat workspace/version`
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/
-            version=={cat workspace/version}
-            docker build -t scala-maven:version .
+            docker build -t scala-maven:$version .
             docker images   
 
      # # pushing to ECR

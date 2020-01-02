@@ -133,6 +133,10 @@ jobs:
             sudo apt-get update && sudo apt-get install -qq -y python-pip libpython-dev
             curl -O https://bootstrap.pypa.io/get-pip.py && sudo python get-pip.py
             sudo pip install -q awscli --upgrade
+            
+      - run:
+          name: show sha1
+          command: echo ${GIT_HASH}
 
       # setup remote env for docker
       - setup_remote_docker

@@ -229,7 +229,7 @@ jobs:
               fi
               
               echo 'export APP_VERSION=$version' >> $BASH_ENV
-              
+              source $BASH_ENV
               echo $APP_VERSION
               
       - run:

@@ -247,8 +247,9 @@ jobs:
           name: Docker build
           command: |
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
-            cd ~/repo/workspace/archive/                
-            docker build -t scala-maven:'cat workspace/version' .
+            cd ~/repo/workspace/archive/
+            version=={cat workspace/version}
+            docker build -t scala-maven:version .
             docker images   
 
      # # pushing to ECR

@@ -230,22 +230,17 @@ jobs:
               
               echo 'export APP_VERSION=$version' >> $BASH_ENV
               source $BASH_ENV
-              echo $APP_VERSION
+              echo $APP_VERSION > workspace/version
+              
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: workspace
               
       - run:
           name: version
-          command: echo ${APP_VERSION} 
-          
-      - run:
-          name:
-          command:
-              echo 'export VERSION="123"' >> $BASH_ENV
-              source $BASH_ENV
-              echo $VERSION
-              
-      - run:
-          name: version
-          command: echo ${VERSION}
+          command: |
+             echo ${APP_VERSION}
+             cat workspace/version
 
       # build docker image
       - run:

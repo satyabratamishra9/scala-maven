@@ -239,7 +239,7 @@ jobs:
       - run:
           name:
           command:
-              echo 'export VERSION=123' >> $BASH_ENV
+              echo 'export VERSION="123"' >> $BASH_ENV
               sudo source $BASH_ENV
               echo $VERSION
               

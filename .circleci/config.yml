@@ -1,9 +1,6 @@
 version: 2.1
 general:
 
-orbs:
-  nexus-platform-orb: sonatype/nexus-platform-orb@1.0.6 
-
 jobs:
 
   test:
@@ -100,83 +97,6 @@ jobs:
           paths:
             - archive
 
-  # -----------------------------------------------
-      
-   #   - run: 
-   #       name: Installs the nexus-platform-api and CLI script
-   #       command: |
-            
-   #         curl -L https://dl.bintray.com/groovy/maven/apache-groovy-binary-2.5.3.zip -o apache-groovy-binary.zip
-   #         mkdir -p ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin || true
-   #         curl -L https://raw.githubusercontent.com/sonatype-nexus-community/docker-nexus-platform-cli/master/src/main/groovy/NexusPublisher.groovy -o ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy
-   #         unzip apache-groovy-binary.zip
-   #         mv groovy-2.5.3 groovy
-   #         echo PATH=${PATH}:${CIRCLE_WORKING_DIRECTORY}/groovy/bin/ > setup.sh
-        
-      #- run: >
-      #    [[ -r setup.sh ]] && . setup.sh ;
-       #   groovy ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy 
-      #    --username "admin" 
-      #    --password "admin" 
-      #    --serverurl "http://34.236.146.0:8081/repository/scala-maven-nexus/" 
-      #    --filename "~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar" 
-      #    --format "maven2" 
-      #    --repository "scala-maven-nexus" "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar"
-      
-    #  ----------
-    #  - run:
-    #      name: publish artifact
-    #      command: |  
-    #        curl -v \
-    #        -F "r=scala-maven-nexus" \
-    #        -F "g=com.jesperdj" \
-    #        -F "a=scala-maven-example" \
-    #        -F "v=1.0.0" \
-    #        -F "p=jar" \
-    #        -F "file=~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar " \
-    #        -u admin:admin \
-    #        http://34.236.146.0:8081/repository/scala-maven-nexus/
-    
-    #  - run:
-    #      name: install nexus cli
-    #      command: |
-    #         sudo apt update
-    #         sudo apt install ruby-full
-    #         sudo gem install nexus_cli
-          
-    #  - run:
-    #      name: upload artifacts
-    #      command: |
-    #         touch .nexus_cli
-    #         echo 'url: "http://my-nexus-server/nexus/"' > .nexus_cli
-    #         echo 'repository: "my-repository-id"' >> .nexus_cli
-    #         echo 'username: "admin"' >> .nexus_cli
-    #         echo 'password: "admin"' >> .nexus_cli
-             
-    #         nexus-cli push_artifact com.jesperdj.scala-maven-example:scala-maven-example:jar:1.0.0 ~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar
-
-           
-      
-  #          username: '${NEXUS_RM_USERNAME}'
-  #          password: '${NEXUS_RM_PASSWORD}'
-  #          serverurl: 'http://107.21.74.226:8081/repository/scala-maven-nexus/'
-  #          filename: '/archive/scala-maven-example-1.0.0-SNAPSHOT.jar'
-  #          format: 'maven2'
-  #          attributes: '-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar'
-  #          repository: 'scala-maven-nexus'
-  #          workspace: '~/repo/workspace/'
-  #    - run:
-  #        name: publish artifact
-  #        command: |
-  #           mvn -Dmaven.install.skip=true -Dmaven.test.skip=true deploy:deploy-file \
-  #           -DgroupId=com.jesperdj \
-  #           -DartifactId=scala-maven-example \
-  #           -Dversion=1.0.0 \
-  #           -Dpackaging=jar \
-  #           -Dfile=/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar \
-  #           -DgeneratePom=true \
-  #           -DupdateReleaseInfo=true \
-  #           -Durl="https://admin:admin@http://34.236.146.0:8081/repository/scala-maven-nexus/"
 
   build:
 
@@ -226,7 +146,7 @@ jobs:
               then
                 version=$(git tag -l --points-at HEAD)
               else
-                version="${CIRCLE_BRANCH}-${GIT_HASH}"
+                version="${CIRCLE_BRANCH}-'${GIT_HASH}'"
               fi
               
               echo 'export APP_VERSION=$version' >> $BASH_ENV

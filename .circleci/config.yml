@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 general:
 
 orbs:
@@ -188,7 +188,6 @@ jobs:
     environment:
       # Customize the JVM maximum heap size
       JVM_OPTS: -Xmx3200m  
-      BASH_ENV: ~/.circlerc
 
     steps:
       - checkout
@@ -229,7 +228,7 @@ jobs:
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
               fi
               
-              echo 'export APP_VERSION=$version' >> ~/.circlerc
+              echo 'export APP_VERSION="$version"' >> $BASH_ENV
               echo $APP_VERSION
               
       - run:

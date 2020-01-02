@@ -229,7 +229,7 @@ jobs:
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
               fi
               
-              sudo echo 'export APP_VERSION=$version' >> /etc/profile
+              echo 'export APP_VERSION=$version' >> $BASH_ENV
               sudo source $BASH_ENV
               echo $APP_VERSION
               

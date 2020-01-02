@@ -228,13 +228,13 @@ jobs:
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
               fi
               
-              echo 'export VERSION=$version' >> $BASH_ENV
+              echo 'export APP_VERSION=$version' >> $BASH_ENV
               source $BASH_ENV
-              echo $VERSION
+              echo $APP_VERSION
               
       - run:
           name: version
-          command: echo ${VERSION}   
+          command: echo ${APP_VERSION}   
 
       # build docker image
       - run:
@@ -242,7 +242,7 @@ jobs:
           command: |
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/                
-            docker build -t scala-maven:$version .
+            docker build -t scala-maven:$VERSION .
             docker images   
 
      # # pushing to ECR

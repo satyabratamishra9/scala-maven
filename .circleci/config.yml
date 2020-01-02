@@ -228,7 +228,8 @@ jobs:
                 version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
               fi
               
-              echo 'export APP_VERSION="$version"' >> $BASH_ENV
+              echo 'export APP_VERSION=$version' >> $BASH_ENV
+              
               echo $APP_VERSION
               
       - run:

@@ -225,7 +225,7 @@ jobs:
               then
                 version=$(git tag -l --points-at HEAD)
               else
-                version="${CIRCLE_BRANCH}-`date +%d-%m-%Y-%H-%M`"
+                version="${CIRCLE_BRANCH}-{CIRCLE_SHA1}"
               fi
               
               echo 'export APP_VERSION=$version' >> $BASH_ENV
@@ -298,7 +298,7 @@ jobs:
 
 workflows:
   version: 2.1
-  test-and-build:
+  test-build-n-deploy:
     jobs:
     - test
     - build:

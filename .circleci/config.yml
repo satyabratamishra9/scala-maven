@@ -218,6 +218,10 @@ jobs:
       - setup_remote_docker
               # docker_layer_caching: true
               
+      - run:
+          name: show sha1
+          command: echo ${GIT_HASH}
+              
       # docker image versioning
       - run:
           name: Docker image version

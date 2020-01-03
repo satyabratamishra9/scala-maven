@@ -153,7 +153,7 @@ jobs:
               then
                 version=$(git tag -l --points-at HEAD)
               else
-                version="${CIRCLE_BRANCH}-'${GIT_HASH}'"
+                version="${CIRCLE_BRANCH}-${GIT_HASH}"
               fi
               
               echo 'export APP_VERSION=$version' >> $BASH_ENV

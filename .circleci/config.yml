@@ -263,10 +263,14 @@ workflows:
           tags:
             only: /^v.*/
           branches:
-              ignore: /.*/              
+              ignore: /.*/ 
+    - hold: 
+         type: approval 
+         requires: 
+           - build
     - deploy:
         requires:
-          - build
+          - hold
         filters:
           tags:
             only: /^v.*/ 

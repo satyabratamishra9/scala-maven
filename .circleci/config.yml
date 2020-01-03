@@ -252,7 +252,7 @@ workflows:
             only:
             - develop
             
-  run-with-tag:
+  approval-deploy-with-tag:
     jobs:
     - test:
         filters:
@@ -269,10 +269,10 @@ workflows:
           branches:
               ignore: /.*/ 
     - hold: 
-         type: approval 
-         requires: 
-           - build
-         filters:
+        type: approval 
+        requires: 
+          - build
+        filters:
           tags:
             only: /^v.*/
           branches:

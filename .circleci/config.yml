@@ -137,6 +137,10 @@ jobs:
       - setup_remote_docker
               # docker_layer_caching: true
               
+      - run:
+          name: show sha1
+          command: echo ${GIT_HASH}
+              
       # docker image versioning
       - run:
           name: Docker image version
@@ -203,7 +207,7 @@ jobs:
             - v1-dependencies-                  
              
       - run:
-          name: Docker image version
+          name: App versioning
           command: | 
               GIT_HASH=$(echo $CIRCLE_SHA1 | cut -c -7) 
               
@@ -248,7 +252,7 @@ workflows:
             only:
             - develop
             
-  run-with-tag:
+  approval-deploy-with-tag:
     jobs:
     - test:
         filters:
@@ -265,9 +269,14 @@ workflows:
           branches:
               ignore: /.*/ 
     - hold: 
-         type: approval 
-         requires: 
-           - build
+        type: approval 
+        requires: 
+          - build
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+              ignore: /.*/
     - deploy:
         requires:
           - hold

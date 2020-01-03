@@ -151,9 +151,7 @@ jobs:
               fi
               
               echo "export APP_VERSION=`echo ${version}`" >> $BASH_ENV
-              source $BASH_ENV
-              cat $BASH_ENV
-                           
+              source $BASH_ENV                           
 
       # build docker image
       - run:
@@ -202,6 +200,11 @@ jobs:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
             - v1-dependencies- 
+            
+      - run:
+          name: Hi
+          command: |
+             echo $APP_VERSION
             
      # - run:
      #     name: Helm deployment

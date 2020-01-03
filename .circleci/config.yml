@@ -150,8 +150,9 @@ jobs:
                 version="${CIRCLE_BRANCH}-${GIT_HASH}"
               fi
               
-              echo 'export APP_VERSION=$version' >> $BASH_ENV
+              echo 'export APP_VERSION="${version}"' >> $BASH_ENV
               source $BASH_ENV
+              echo $BASH_ENV
               echo $APP_VERSION > workspace/version
               
       - attach_workspace:
@@ -198,8 +199,8 @@ jobs:
     steps:
       - checkout
 
-  #    - attach_workspace:
-  #        at: workspace
+    #  - attach_workspace:
+    #      at: workspace
 
       - restore_cache:
           keys:
@@ -207,11 +208,11 @@ jobs:
             # use latest cache if no exact match found
             - v1-dependencies- 
             
-      - run:
-          name: show Hi
-          command: echo "Hi"
+     # - run:
+     #     name: Helm deployment
+     #     command: |
+     #        helm upgrade --install trip-service charts/trip-service
   
-
 
 workflows:
   version: 2.1

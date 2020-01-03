@@ -202,7 +202,7 @@ jobs:
             # use latest cache if no exact match found
             - v1-dependencies-                  
              
-       - run:
+      - run:
           name: Docker image version
           command: | 
               GIT_HASH=$(echo $CIRCLE_SHA1 | cut -c -7) 
@@ -217,10 +217,10 @@ jobs:
               echo "export APP_VERSION=`echo ${version}`" >> $BASH_ENV
               source $BASH_ENV   
               
-        - run:
-            name: Show APP Version
-            command:
-               echo $APP_VERSION
+      - run:
+          name: Show APP Version
+          command:
+              echo $APP_VERSION
             
      # - run:
      #     name: Helm deployment

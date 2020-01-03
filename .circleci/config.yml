@@ -178,6 +178,11 @@ jobs:
 #            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
 #            aws ecr list-images --repository-name scala-maven
 
+       - persist_to_workspace:
+          root: workspace
+          paths:
+            - BASH_ENV
+
   deploy:
   
     working_directory: ~/repo
@@ -192,19 +197,34 @@ jobs:
     steps:
       - checkout
 
-    #  - attach_workspace:
-    #      at: workspace
+      - attach_workspace:
+          at: workspace
 
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
-            - v1-dependencies- 
-            
-      - run:
-          name: Hi
-          command: |
-             echo $APP_VERSION
+            - v1-dependencies-                  
+             
+       - run:
+          name: Docker image version
+          command: | 
+              GIT_HASH=$(echo $CIRCLE_SHA1 | cut -c -7) 
+              
+              if git tag -l --points-at HEAD | grep "^v.*";
+              then
+                version=$(git tag -l --points-at HEAD)
+              else
+                version="${CIRCLE_BRANCH}-${GIT_HASH}"
+              fi
+              
+              echo "export APP_VERSION=`echo ${version}`" >> $BASH_ENV
+              source $BASH_ENV   
+              
+        - run:
+            name: Show APP Version
+            command:
+               echo $APP_VERSION
             
      # - run:
      #     name: Helm deployment

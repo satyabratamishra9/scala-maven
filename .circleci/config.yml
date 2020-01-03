@@ -1,9 +1,6 @@
 version: 2.1
 general:
 
-orbs:
-  nexus-platform-orb: sonatype/nexus-platform-orb@1.0.6 
-
 jobs:
 
   test:
@@ -100,83 +97,6 @@ jobs:
           paths:
             - archive
 
-  # -----------------------------------------------
-      
-   #   - run: 
-   #       name: Installs the nexus-platform-api and CLI script
-   #       command: |
-            
-   #         curl -L https://dl.bintray.com/groovy/maven/apache-groovy-binary-2.5.3.zip -o apache-groovy-binary.zip
-   #         mkdir -p ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin || true
-   #         curl -L https://raw.githubusercontent.com/sonatype-nexus-community/docker-nexus-platform-cli/master/src/main/groovy/NexusPublisher.groovy -o ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy
-   #         unzip apache-groovy-binary.zip
-   #         mv groovy-2.5.3 groovy
-   #         echo PATH=${PATH}:${CIRCLE_WORKING_DIRECTORY}/groovy/bin/ > setup.sh
-        
-      #- run: >
-      #    [[ -r setup.sh ]] && . setup.sh ;
-       #   groovy ${CIRCLE_WORKING_DIRECTORY}/sonatype/bin/NexusPublisher.groovy 
-      #    --username "admin" 
-      #    --password "admin" 
-      #    --serverurl "http://34.236.146.0:8081/repository/scala-maven-nexus/" 
-      #    --filename "~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar" 
-      #    --format "maven2" 
-      #    --repository "scala-maven-nexus" "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar"
-      
-    #  ----------
-    #  - run:
-    #      name: publish artifact
-    #      command: |  
-    #        curl -v \
-    #        -F "r=scala-maven-nexus" \
-    #        -F "g=com.jesperdj" \
-    #        -F "a=scala-maven-example" \
-    #        -F "v=1.0.0" \
-    #        -F "p=jar" \
-    #        -F "file=~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar " \
-    #        -u admin:admin \
-    #        http://34.236.146.0:8081/repository/scala-maven-nexus/
-    
-    #  - run:
-    #      name: install nexus cli
-    #      command: |
-    #         sudo apt update
-    #         sudo apt install ruby-full
-    #         sudo gem install nexus_cli
-          
-    #  - run:
-    #      name: upload artifacts
-    #      command: |
-    #         touch .nexus_cli
-    #         echo 'url: "http://my-nexus-server/nexus/"' > .nexus_cli
-    #         echo 'repository: "my-repository-id"' >> .nexus_cli
-    #         echo 'username: "admin"' >> .nexus_cli
-    #         echo 'password: "admin"' >> .nexus_cli
-             
-    #         nexus-cli push_artifact com.jesperdj.scala-maven-example:scala-maven-example:jar:1.0.0 ~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar
-
-           
-      
-  #          username: '${NEXUS_RM_USERNAME}'
-  #          password: '${NEXUS_RM_PASSWORD}'
-  #          serverurl: 'http://107.21.74.226:8081/repository/scala-maven-nexus/'
-  #          filename: '/archive/scala-maven-example-1.0.0-SNAPSHOT.jar'
-  #          format: 'maven2'
-  #          attributes: '-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0 -Aextension=jar'
-  #          repository: 'scala-maven-nexus'
-  #          workspace: '~/repo/workspace/'
-  #    - run:
-  #        name: publish artifact
-  #        command: |
-  #           mvn -Dmaven.install.skip=true -Dmaven.test.skip=true deploy:deploy-file \
-  #           -DgroupId=com.jesperdj \
-  #           -DartifactId=scala-maven-example \
-  #           -Dversion=1.0.0 \
-  #           -Dpackaging=jar \
-  #           -Dfile=/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar \
-  #           -DgeneratePom=true \
-  #           -DupdateReleaseInfo=true \
-  #           -Durl="https://admin:admin@http://34.236.146.0:8081/repository/scala-maven-nexus/"
 
   build:
 
@@ -188,7 +108,6 @@ jobs:
     environment:
       # Customize the JVM maximum heap size
       JVM_OPTS: -Xmx3200m 
-      GIT_HASH: $(echo $CIRCLE_SHA1 | cut -c -7)
 
     steps:
       - checkout
@@ -225,7 +144,9 @@ jobs:
       # docker image versioning
       - run:
           name: Docker image version
-          command: |         
+          command: | 
+              GIT_HASH=$(echo $CIRCLE_SHA1 | cut -c -7) 
+              
               if git tag -l --points-at HEAD | grep "^v.*";
               then
                 version=$(git tag -l --points-at HEAD)
@@ -233,22 +154,16 @@ jobs:
                 version="${CIRCLE_BRANCH}-${GIT_HASH}"
               fi
               
-              echo 'export APP_VERSION=$version' >> $BASH_ENV
-              source $BASH_ENV
-              echo $APP_VERSION > workspace/version
-              
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: workspace                
+              echo "export APP_VERSION=`echo ${version}`" >> $BASH_ENV
+              source $BASH_ENV                           
 
       # build docker image
       - run:
           name: Docker build
           command: |
-            version=`cat workspace/version`
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/
-            docker build -t scala-maven:$version .
+            docker build -t scala-maven:$APP_VERSION .
             docker images   
 
      # # pushing to ECR
@@ -266,6 +181,7 @@ jobs:
 #          command: |
 #            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
 #            aws ecr list-images --repository-name scala-maven
+    
 
   deploy:
   
@@ -281,20 +197,40 @@ jobs:
     steps:
       - checkout
 
-  #    - attach_workspace:
-  #        at: workspace
+      - attach_workspace:
+          at: workspace
 
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
-            - v1-dependencies- 
-            
+            - v1-dependencies-                  
+             
       - run:
-          name: show Hi
-          command: echo "Hi"
+          name: Docker image version
+          command: | 
+              GIT_HASH=$(echo $CIRCLE_SHA1 | cut -c -7) 
+              
+              if git tag -l --points-at HEAD | grep "^v.*";
+              then
+                version=$(git tag -l --points-at HEAD)
+              else
+                version="${CIRCLE_BRANCH}-${GIT_HASH}"
+              fi
+              
+              echo "export APP_VERSION=`echo ${version}`" >> $BASH_ENV
+              source $BASH_ENV   
+              
+      - run:
+          name: Show APP Version
+          command:
+              echo $APP_VERSION
+            
+     # - run:
+     #     name: Helm deployment
+     #     command: |
+     #        helm upgrade --install trip-service charts/trip-service
   
-
 
 workflows:
   version: 2.1
@@ -331,10 +267,14 @@ workflows:
           tags:
             only: /^v.*/
           branches:
-              ignore: /.*/              
+              ignore: /.*/ 
+    - hold: 
+         type: approval 
+         requires: 
+           - build
     - deploy:
         requires:
-          - build
+          - hold
         filters:
           tags:
             only: /^v.*/ 

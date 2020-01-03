@@ -219,7 +219,7 @@ jobs:
              sudo chmod +x ./aws-iam-authenticator
              sudo cp ./aws-iam-authenticator /bin/aws-iam-authenticator
              
-       - run:
+      - run:
           name: Install latest awscli version
           command: |
              sudo apt install unzip && curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"

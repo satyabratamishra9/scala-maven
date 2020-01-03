@@ -150,23 +150,18 @@ jobs:
                 version="${CIRCLE_BRANCH}-${GIT_HASH}"
               fi
               
-              echo 'export APP_VERSION="${version}"' >> $BASH_ENV
+              echo "export APP_VERSION=`echo ${version}`" >> $BASH_ENV
               source $BASH_ENV
               cat $BASH_ENV
-              echo $APP_VERSION > workspace/version
-              
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: workspace                
+                           
 
       # build docker image
       - run:
           name: Docker build
           command: |
-            version=`cat workspace/version`
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/
-            docker build -t scala-maven:$version .
+            docker build -t scala-maven:$APP_VERSION .
             docker images   
 
      # # pushing to ECR

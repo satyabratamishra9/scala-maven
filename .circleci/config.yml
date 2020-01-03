@@ -238,6 +238,10 @@ jobs:
              tar -zxvf helm-v3.0.1-linux-amd64.tar.gz
              sudo mv linux-amd64/helm /bin/helm && sudo rm -rf linux-amd64
              
+      - run:
+          name: helm version
+          command: helm version
+             
     #  - run:
     #      name: Add stable repos
     #      command: helm repo add stable https://kubernetes-charts.storage.googleapis.com/

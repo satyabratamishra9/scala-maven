@@ -183,9 +183,18 @@ jobs:
 #            aws ecr list-images --repository-name scala-maven
     
   hold:
+  
+    working_directory: ~/repo
+
+    docker:
+    - image: circleci/openjdk:8-jdk
+
     
     steps:
-      - mail -s "Approve for production deploy" satyabrata@sigmoidanalytics.com
+      - run:
+          name: Approval
+          command: mail -s "Approve for production deploy" satyabrata@sigmoidanalytics.com
+      
       
   deploy:
   

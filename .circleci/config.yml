@@ -335,7 +335,7 @@ workflows:
         message: "Pending approval - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"
         webhook: '${SLACK_WEBHOOK}'
         requires:
-          - build
+          - mail
         filters:
           tags:
             only: /^v.*/
@@ -345,7 +345,7 @@ workflows:
     - hold: 
         type: approval 
         requires: 
-          - build
+          - mail
         filters:
           tags:
             only: /^v.*/

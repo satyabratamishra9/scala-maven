@@ -22,13 +22,7 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found 
-            - v1-dependencies-
-            
-      - run:
-          name: mail
-          command: |
-             mailx -s "Pending Approval" satyabrata@sigmoidanalytics.com \<<< "Approve from hold job - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"            
-             echo “This is body of the mail” | mail -s 'Pending Approval' satyabrata@sigmoidanalytics.com
+            - v1-dependencies-                 
              
       # run tests
       - run:
@@ -142,11 +136,7 @@ jobs:
       # setup remote env for docker
       - setup_remote_docker
               # docker_layer_caching: true
-              
-      - run:
-          name: show sha1
-          command: echo ${GIT_HASH}
-              
+                    
       # docker image versioning
       - run:
           name: Docker image version

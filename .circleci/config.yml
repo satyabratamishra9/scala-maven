@@ -28,7 +28,6 @@ jobs:
           name: mail
           command: |
              mailx -s "Pending Approval" satyabrata@sigmoidanalytics.com \<<< "Approve from hold job - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"            
-             mail -s "Pending Approval" satyabrata@sigmoidanalytics.com      
              echo “This is body of the mail” | mail -s “Pending Approval” satyabrata@sigmoidanalytics.com
              
       # run tests

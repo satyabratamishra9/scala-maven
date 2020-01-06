@@ -325,7 +325,7 @@ workflows:
               
     - slack/approval-notification:
         message: "Pending approval - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"
-        webhook: https://hooks.slack.com/services/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
+        webhook: '${SLACK_WEBHOOK}'
         requires:
           - build
         filters:

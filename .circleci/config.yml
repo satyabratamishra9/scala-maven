@@ -188,12 +188,16 @@ jobs:
 
     docker:
     - image: circleci/openjdk:8-jdk
-
     
     steps:
+    
+      - checkout
+      
       - run:
           name: Approval
-          command: mail -s "Approve for production deploy" satyabrata@sigmoidanalytics.com
+          command: |
+             sudo apt-get install mailutils
+             mail -s "Approve for production deploy" satyabrata@sigmoidanalytics.com
       
       
   deploy:
@@ -222,8 +226,8 @@ jobs:
       - run:
           name: Install and confgure kubectl
           command: |
-             sudo curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
-             sudo chmod +x /usr/local/bin/kubectl  
+             sudo curl -L https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl 
+             sudo chmod +x /usr/local/bin/kubectl 
              
       - run:
           name: Install and confgure kubectl aws-iam-authenticator

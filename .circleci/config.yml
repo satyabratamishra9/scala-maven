@@ -327,9 +327,9 @@ workflows:
           - build
         filters:
           tags:
-            only: /^v.*
+            only: /^v.*/
           branches:
-              ignore: /.*
+              ignore: /.*/
               
     - slack/approval-notification:
         message: "Pending approval - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"

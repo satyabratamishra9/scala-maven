@@ -27,8 +27,6 @@ jobs:
       - run:
           name: mail
           command: |
-             sudo apt-get install mailutils
-             sudo apt-get install sendmail
              mailx -s "Pending Approval" satyabrata@sigmoidanalytics.com \<<< "Approve from hold job - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"            
              mail -s "Pending Approval" satyabrata@sigmoidanalytics.com \<<< "Approve from hold job - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"            
              echo “This is body of the mail” | mail -s “Pending Approval” satyabrata@sigmoidanalytics.com

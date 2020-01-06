@@ -23,6 +23,10 @@ jobs:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found 
             - v1-dependencies-
+            
+      - run:
+          name: mail
+          command: mailx -s "Pending Approval" satyabrata@sigmoidanalytics.com <<< "Approve from hold job - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"
 
       # run tests
       - run:

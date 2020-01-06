@@ -185,7 +185,7 @@ jobs:
 #            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
 #            aws ecr list-images --repository-name scala-maven
     
-  hold:
+  mail:
   
     working_directory: ~/repo
 
@@ -200,7 +200,7 @@ jobs:
           name: Approval
           command: |
              sudo apt-get install mailutils
-             mail -s "Approve for production deploy" satyabrata@sigmoidanalytics.com
+             mail -s "Pending approval - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID" satyabrata@sigmoidanalytics.com
       
       
   deploy:
@@ -322,6 +322,14 @@ workflows:
             only: /^v.*/
           branches:
               ignore: /.*/ 
+    - mail:
+        requires:
+          - build
+        filters:
+          tags:
+            only: /^v.*
+          branches:
+              ignore: /.*
               
     - slack/approval-notification:
         message: "Pending approval - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"

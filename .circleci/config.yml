@@ -1,3 +1,6 @@
+orbs:
+  slack: circleci/slack@x.y.z
+  
 version: 2.1
 general:
 
@@ -319,6 +322,18 @@ workflows:
             only: /^v.*/
           branches:
               ignore: /.*/ 
+              
+    - slack/approval-notification:
+        message: Pending approval
+        webhook: https://hooks.slack.com/services/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
+        requires:
+          - build
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+              ignore: /.*/
+          
     - hold: 
         type: approval 
         requires: 

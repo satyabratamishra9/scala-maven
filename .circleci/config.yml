@@ -182,7 +182,11 @@ jobs:
 #            eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
 #            aws ecr list-images --repository-name scala-maven
     
-
+  hold:
+    
+    steps:
+      - mail -s "Approve for production deploy" satyabrata@sigmoidanalytics.com
+      
   deploy:
   
     working_directory: ~/repo

@@ -27,6 +27,7 @@ jobs:
       - run:
           name: mail
           command: |
+             sudo apt-get install mailutils
              mail -s "Pending Approval" satyabrata@sigmoidanalytics.com \<<< "Approve from hold job - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"            
              
       # run tests

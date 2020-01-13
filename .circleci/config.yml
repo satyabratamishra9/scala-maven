@@ -202,7 +202,7 @@ jobs:
 #            aws ecr list-images --repository-name scala-maven
     
 
-  deploy: &deploy
+  deploy: 
   
     working_directory: ~/repo
 
@@ -306,13 +306,6 @@ jobs:
      #        export KUBECONFIG=$HOME/.kube/config
      #        helm upgrade --install trip-service charts/trip-service --set image.tag=$APP_VERSION
      
-  deploy-dev:
-    <<: *deploy
-
-  deploy-staging:
-    <<: *deploy
-
-  
 
 workflows:
   version: 2.1
@@ -326,26 +319,13 @@ workflows:
           branches:
             only:                         
             - develop
-    - deploy-dev: 
+    - deploy: 
         requires:
           - build
         filters:
           branches:
             only:
             - develop
-        context: develop    
-                    
-    - deploy-staging:
-          requires:            
-            - test
-            - build:
-                requires:
-                  - test
-                filters:
-                  branches:
-                    only:                         
-                    - staging
-                context: staging
             
   approval-deploy-with-tag:
     jobs:
@@ -380,4 +360,3 @@ workflows:
             only: /^v.*/ 
           branches:
               ignore: /.*/ 
-        context: production

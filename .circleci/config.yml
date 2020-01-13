@@ -64,18 +64,18 @@ jobs:
 #                -Dsonar.sources=. \
 #                 -Dsonar.host.url=${SONAR_SERVER} \
 #                 -Dsonar.login=${SONARQUBE_TOKEN} $SONAR_SCANNER_OPTS_CUSTOM
-
+      
+      # download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # use latest cache if no exact match found
+            - v1-dependencies-
+      
+      # build package
       - run:
           name: create package
           command: mvn clean install -Dmaven.test.skip=true
-
-      - run:
-          name: save package to an archive
-          command: |
-            mkdir -p archive
-            pwd
-            ls -lart ~/repo/target
-            cp -r ~/repo/target/*.jar ~/repo/archive/
             
       # save build cache
       - save_cache:
@@ -96,7 +96,30 @@ jobs:
           root: .
           paths:
             - archive
-
+            
+ #     - run:
+ #         name: publish artifact to nexus
+ #         command: |
+ #            groovy repo/sonatype/bin/NexusPublisher.groovy \
+ #            --username "admin" \
+ #            --password "admin" \
+ #            --serverurl "http://3.86.235.89:8081/repository/scala-maven/" \
+ #            --filename "repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar" \
+ #            --format "maven2" \
+ #            --repository "scala-maven" "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0-SNAPSHOT -Aextension=jar"
+       
+      - run:
+          name: publish artifact
+          command: |  
+            curl -v \
+            -F "r=scala-maven" \
+            -F "g=com.jesperdj" \
+            -F "a=scala-maven-example" \
+            -F "v=1.0.0-SNAPSHOT" \
+            -F "p=jar" \
+            -F "file=~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar " \
+            -u admin:admin \
+            http://3.86.235.89:8081/repository/scala-maven/
 
   build:
 
@@ -159,7 +182,7 @@ jobs:
           command: |
             cp ~/repo/Dockerfile ~/repo/workspace/archive/
             cd ~/repo/workspace/archive/
-            docker build -t scala-maven:$APP_VERSION .
+            docker build -t scala-maven .
             docker images   
 
      # # pushing to ECR
@@ -168,8 +191,8 @@ jobs:
      #     command: |
      #       cd ~/repo/workspace/archive/
      #       eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-     #       docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:${CIRCLE_BRANCH}
-     #       docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${CIRCLE_BRANCH}
+     #       docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/scala-maven:${APP_VERSION}
+     #       docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${APP_VERSION}
 
 # show all docker images
 #      - run:
@@ -179,7 +202,7 @@ jobs:
 #            aws ecr list-images --repository-name scala-maven
     
 
-  deploy:
+  deploy: &deploy
   
     working_directory: ~/repo
 
@@ -201,50 +224,64 @@ jobs:
             - v1-dependencies-{{ checksum "pom.xml" }}
             # use latest cache if no exact match found
             - v1-dependencies-  
-            
+      
+     # Install kubectl     
       - run:
-          name: Install and confgure kubectl
+          name: Install and configure kubectl
           command: |
              sudo curl -L https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl 
              sudo chmod +x /usr/local/bin/kubectl  
-
-             
+      
+      # install iam-authenticator
       - run:
-          name: Install and confgure kubectl aws-iam-authenticator
+          name: Install and configure kubectl aws-iam-authenticator
           command: |
              curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/darwin/amd64/aws-iam-authenticator
              sudo chmod +x ./aws-iam-authenticator
              sudo cp ./aws-iam-authenticator /bin/aws-iam-authenticator
              
+      # install jq
+      - run:
+          name: Install jq
+          command: |
+            sudo apt-get update && sudo apt-get install jq -y
+            
+      # install aws cli       
       - run:
           name: Install latest awscli version
           command: |
              sudo apt install unzip && curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
              unzip awscli-bundle.zip && ./awscli-bundle/install -b ~/bin/aws
+      
+      # get kubeconfig       
+    #  - run:
+    #      name: Get the kubeconfig file 
+    #      command: |
+    #         unset  AWS_SESSION_TOKEN
              
-   #   - run:
-   #       name: Get the kubeconfig file 
-   #       command: |
-   #          export KUBECONFIG=$HOME/.kube/kubeconfig && /home/circleci/bin/aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+    #         temp_role=$(aws sts assume-role \
+    #                --role-arn "$IAM_ROLE_ARN" \
+    #                --role-session-name "circle-session-${CIRCLE_BUILD_NUM}")
+    #         export AWS_ACCESS_KEY_ID=$(echo $temp_role | jq -r .Credentials.AccessKeyId)
+    #         export AWS_SECRET_ACCESS_KEY=$(echo $temp_role | jq -r .Credentials.SecretAccessKey)
+    #         export AWS_SESSION_TOKEN=$(echo $temp_role | jq -r .Credentials.SessionToken)
+    #         env | grep -i AWS_
+             
+    #         export KUBECONFIG=$HOME/.kube/config && /home/circleci/bin/aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $EKS_CLUSTER_NAME --role-arn $IAM_ROLE_ARN
      
+      # install helm        
       - run:
-          name: Install and configuire helm
+          name: Install and configure helm
           command: |
              wget https://get.helm.sh/helm-v3.0.1-linux-amd64.tar.gz
              tar -zxvf helm-v3.0.1-linux-amd64.tar.gz
              sudo mv linux-amd64/helm /bin/helm && sudo rm -rf linux-amd64
-             
-      - run:
-          name: helm version
-          command: helm version
-             
-    #  - run:
-    #      name: Add stable repos
-    #      command: helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-             
+      
+      # Application versioning       
       - run:
           name: App versioning
-          command: | 
+          command: |
+          
               GIT_HASH=$(echo $CIRCLE_SHA1 | cut -c -7) 
               
               if git tag -l --points-at HEAD | grep "^v.*";
@@ -261,11 +298,20 @@ jobs:
           name: Show APP Version
           command:
               echo $APP_VERSION
-            
+      
+      # Deploy with helm        
      # - run:
      #     name: Helm deployment
      #     command: |
-     #        helm upgrade --install trip-service --set=image.tag=$APP_VERSION charts/trip-service
+     #        export KUBECONFIG=$HOME/.kube/config
+     #        helm upgrade --install trip-service charts/trip-service --set image.tag=$APP_VERSION
+     
+  deploy-dev:
+    <<: *deploy
+
+  deploy-staging:
+    <<: *deploy
+
   
 
 workflows:
@@ -280,13 +326,26 @@ workflows:
           branches:
             only:                         
             - develop
-    - deploy:
+    - deploy-dev: 
         requires:
           - build
         filters:
           branches:
             only:
             - develop
+        context: develop    
+                    
+    - deploy-staging:
+          requires:            
+            - test
+            - build:
+                requires:
+                  - test
+                filters:
+                  branches:
+                    only:                         
+                    - staging
+                context: staging
             
   approval-deploy-with-tag:
     jobs:
@@ -321,3 +380,4 @@ workflows:
             only: /^v.*/ 
           branches:
               ignore: /.*/ 
+        context: production

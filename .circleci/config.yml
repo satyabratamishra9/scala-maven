@@ -95,7 +95,7 @@ jobs:
           format: maven2
           attributes: -CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0-SNAPSHOT -Aextension=jar
           repository: scala-maven
-          workspace: ~/repo/target/
+          workspace: ~/repo/target
          
             
       # add package to workspace

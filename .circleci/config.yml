@@ -244,6 +244,7 @@ jobs:
       - run:
           name: Install jq
           command: |
+            echo ${ENVIRONMENT}	
             sudo apt-get update && sudo apt-get install jq -y
             
       # install aws cli       
@@ -326,6 +327,19 @@ workflows:
           branches:
             only:
             - develop
+        context: develop    
+                    
+    - deploy:
+          requires:            
+            - test
+            - build:
+                requires:
+                  - test
+                filters:
+                  branches:
+                    only:                         
+                    - master
+                context: staging
             
   approval-deploy-with-tag:
     jobs:

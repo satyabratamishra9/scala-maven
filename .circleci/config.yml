@@ -86,8 +86,7 @@ jobs:
           paths:
             - ~/.m2                  
       
-      - nexus-platform-orb/install:          
-          
+      - nexus-platform-orb/install                   
       - nexus-platform-orb/publish:
           username: 'admin'
           password: 'admin'

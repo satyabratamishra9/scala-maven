@@ -90,10 +90,10 @@ jobs:
       - nexus-platform-orb/publish:
           username: admin
           password: admin
-          serverurl: http://34.201.110.39:8081
+          serverurl: 'http://34.201.110.39:8081'
           filename: scala-maven-example-1.0.0-SNAPSHOT.jar
           format: maven2
-          attributes: com.jesperdj/scala-maven-example/1.0.0-SNAPSHOT/jar
+          attributes: '-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0-SNAPSHOT -Aextension=jar'     
           repository: scala-maven
           workspace: ~/repo/target
          

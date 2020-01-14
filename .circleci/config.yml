@@ -84,7 +84,13 @@ jobs:
       - save_cache:
           key: v1-dependencies-{{ checksum "pom.xml" }}
           paths:
-            - ~/.m2                  
+            - ~/.m2    
+            
+      - run:
+          name: show details
+          command: |
+            ls ~/.m2
+            cat ~/.m2/settings.xml
       
       - nexus-platform-orb/install                   
       - nexus-platform-orb/publish:

@@ -336,7 +336,7 @@ workflows:
           - test
     - build:
         requires:
-          - build
+          - test
         filters:
           branches:
             only:                         

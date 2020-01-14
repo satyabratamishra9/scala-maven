@@ -326,6 +326,7 @@ workflows:
           branches:
             only:                         
             - develop
+            - staging
     - deploy-dev: 
         requires:
           - build
@@ -340,7 +341,7 @@ workflows:
         filters:
           branches:
             only:                         
-            - master
+            - staging
         context: staging
             
   approval-deploy-with-tag:

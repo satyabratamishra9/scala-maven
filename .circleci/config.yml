@@ -330,16 +330,13 @@ workflows:
         context: develop    
                     
     - deploy:
-          requires:            
-            - test
-            - build:
-                requires:
-                  - test
-                filters:
-                  branches:
-                    only:                         
-                    - master
-                context: staging
+        requires:
+          - build
+        filters:
+          branches:
+            only:                         
+            - master
+        context: staging
             
   approval-deploy-with-tag:
     jobs:

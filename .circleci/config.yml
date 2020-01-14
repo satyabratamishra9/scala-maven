@@ -108,18 +108,18 @@ jobs:
  #            --format "maven2" \
  #            --repository "scala-maven" "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0-SNAPSHOT -Aextension=jar"
        
-      - run:
-          name: publish artifact
-          command: |  
-            curl -v \
-            -F "r=scala-maven" \
-            -F "g=com.jesperdj" \
-            -F "a=scala-maven-example" \
-            -F "v=1.0.0-SNAPSHOT" \
-            -F "p=jar" \
-            -F "file=~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar " \
-            -u admin:admin \
-            http://3.86.235.89:8081/repository/scala-maven/
+ #     - run:
+ #         name: publish artifact
+ #         command: |  
+ #           curl -v \
+ #           -F "r=scala-maven" \
+ #           -F "g=com.jesperdj" \
+ #           -F "a=scala-maven-example" \
+ #           -F "v=1.0.0-SNAPSHOT" \
+ #           -F "p=jar" \
+ #           -F "file=~repo/workspace/archive/scala-maven-example-1.0.0-SNAPSHOT.jar " \
+ #           -u admin:admin \
+ #           http://3.86.235.89:8081/repository/scala-maven/
 
   build:
 

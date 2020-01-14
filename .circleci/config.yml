@@ -1,3 +1,6 @@
+orbs:
+  nexus-platform-orb: sonatype/nexus-platform-orb@1.0.12
+  
 version: 2.1
 general:
 
@@ -83,6 +86,17 @@ jobs:
           paths:
             - ~/.m2
             
+      - nexus-platform-orb/install:                       
+         
+      - nexus-platform-orb/publish:
+            username: 'admin'
+            password: 'admin'
+            serverurl: 'http://34.201.110.39:8081'
+            filename: ~/repo/target/scala-maven-example-1.0.0-SNAPSHOT.jar
+            format: maven2
+            attributes: '-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0-SNAPSHOT -Aextension=jar'
+            repository: scala-maven
+            
       # add package to workspace
       - run:
           name: save package to an archive
@@ -95,7 +109,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - archive
+            - archive            
+
             
  #     - run:
  #         name: publish artifact to nexus

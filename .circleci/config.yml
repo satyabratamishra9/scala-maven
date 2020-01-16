@@ -160,9 +160,20 @@ jobs:
               --non-recursive \
               org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)
 
+             echo $VERSION
+
+             if [[ $VERSION = *SNAPSHOT ]]
+             then
+               REPOSITORY=scala-maven
+             else
+               REPOSITORY=scala-maven-release
+             fi
+             
+             echo $REPOSITORY
+
              file=$(ls ~/repo/workspace/archive/target/ | grep jar | sed -n 1p)
 
-             curl -v --user admin:admin --upload-file ~/repo/workspace/archive/target/${file} http://107.23.11.53:8081/repository/scala-maven/com/jesperdj/scala-maven-example/${VERSION}/${file}
+             curl -v --user admin:admin --upload-file ~/repo/workspace/archive/target/${file} http://107.23.11.53:8081/repository/${REPOSITORY}/com/jesperdj/scala-maven-example/${VERSION}/${file}
               
 
       - run:

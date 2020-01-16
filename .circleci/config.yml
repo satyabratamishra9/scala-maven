@@ -93,21 +93,7 @@ jobs:
             mkdir -p archive/target
             pwd
             ls -lart ~/repo/target
-            cp -r ~/repo/target/*.jar ~/repo/archive/target/
-            
-      - run: |
-          ls ~/repo/archive/target/
-          ls ~/repo/target/
-      
-      - store_artifacts:
-          path: target/scala-maven-example-1.0.0-SNAPSHOT.jar
-            
-      - nexus-platform-orb/install                   
-      - nexus-platform-orb/publish:          
-          serverurl: "http://107.23.11.53:8081"
-          filename: "target/scala-maven-example-1.0.0-SNAPSHOT.jar"
-          attributes: "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0-SNAPSHOT -Aextension=jar"     
-          repository: scala-maven
+            cp -r ~/repo/target/*.jar ~/repo/archive/target/                  
 
       - persist_to_workspace:
           root: .
@@ -166,6 +152,14 @@ jobs:
       - store_artifacts:
           path: ~/repo/workspace/archive/target/
           destination: JARS
+          
+      - nexus-platform-orb/install                   
+      - nexus-platform-orb/publish:          
+          serverurl: "http://107.23.11.53:8081"
+          filename: "archive/target/scala-maven-example-1.0.0-SNAPSHOT.jar"
+          attributes: "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0-SNAPSHOT -Aextension=jar"     
+          repository: scala-maven
+          workspace: ~/repo/workspace
 
       - run:
           name: Install AWS cli
@@ -343,7 +337,7 @@ workflows:
         filters:
           branches:
             only:                         
-            - master
+            - develop
     - deploy-dev: 
         requires:
           - build

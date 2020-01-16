@@ -103,12 +103,9 @@ jobs:
           path: target/scala-maven-example-1.0.0-SNAPSHOT.jar
             
       - nexus-platform-orb/install                   
-      - nexus-platform-orb/publish:
-          username: admin
-          password: admin
-          serverurl: 'http://107.23.11.53:8081'
+      - nexus-platform-orb/publish:          
+          serverurl: "http://107.23.11.53:8081"
           filename: "target/scala-maven-example-1.0.0-SNAPSHOT.jar"
-          format: maven2
           attributes: "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0-SNAPSHOT -Aextension=jar"     
           repository: scala-maven
 

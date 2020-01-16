@@ -95,6 +95,8 @@ jobs:
             ls -lart ~/repo/target
             cp -r ~/repo/target/*.jar ~/repo/archive/target/
             
+      - run: cat ~/repo/archive/target/
+            
       - nexus-platform-orb/install                   
       - nexus-platform-orb/publish:
           username: admin

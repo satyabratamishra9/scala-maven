@@ -84,13 +84,7 @@ jobs:
       - save_cache:
           key: v1-dependencies-{{ checksum "pom.xml" }}
           paths:
-            - ~/.m2    
-            
-      - run:
-          name: show details
-          command: |
-            ls ~/.m2
-            cat ~/.m2/settings.xml
+            - ~/.m2                      
                                  
       # add package to workspace
       - run:

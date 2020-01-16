@@ -150,35 +150,24 @@ jobs:
           path: ~/repo/workspace/archive/target/
           destination: JARS 
           
-      # publish artifacts to nexus
+      # publish artifacts to nexus                    
       - run:
-          name: maven project version
-          command: |
-             VERSION=$(mvn -q \
-              -Dexec.executable="echo" \
-              -Dexec.args='${project.version}' \
-              --non-recursive \
-              org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)
+          name: publish artifacts to nexus
+          command: |  
+             ARTIFACT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)
               
-             if [[ $VERSION = *SNAPSHOT ]]
+             if [[ $ARTIFACT_VERSION = *SNAPSHOT ]]
              then
                REPOSITORY=scala-maven
              else
                REPOSITORY=scala-maven-release
              fi
              
-      - run:
-          name: show
-          command: |
              echo $VERSION                          
              echo $REPOSITORY
-          
-      - run:
-          name: publish artifacts to nexus
-          command: |             
              
              file=$(ls ~/repo/workspace/archive/target/ | grep jar | sed -n 1p)
-             curl -v --user admin:admin --upload-file ~/repo/workspace/archive/target/${file} http://107.23.11.53:8081/repository/${REPOSITORY}/com/jesperdj/scala-maven-example/${VERSION}/${file}
+             curl -v --user {NEXUS_RM_USER}:{NEXUS_RM_USERNAME} --upload-file ~/repo/workspace/archive/target/${file} http://107.23.11.53:8081/repository/${REPOSITORY}/com/jesperdj/scala-maven-example/${ARTIFACT_VERSION}/${file}
               
       - run:
           name: Install AWS cli

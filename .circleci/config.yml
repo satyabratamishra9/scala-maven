@@ -1,6 +1,3 @@
-orbs:
-  nexus-platform-orb: sonatype/nexus-platform-orb@1.0.12
-  
 version: 2.1
 general:
 
@@ -151,17 +148,22 @@ jobs:
       # publish artifacts 
       - store_artifacts:
           path: ~/repo/workspace/archive/target/
-          destination: JARS
+          destination: JARS  
           
-      - nexus-platform-orb/install 
-      
-      - run: ls ~/repo/workspace/archive/target/
-      
-      - nexus-platform-orb/publish:          
-          serverurl: "http://107.23.11.53:8081"
-          filename: "workspace/archive/target/scala-maven-example-1.0.0-SNAPSHOT.jar"
-          attributes: "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0-SNAPSHOT -Aextension=jar"     
-          repository: scala-maven
+      # publish artifacts to nexus
+      - run:
+          name: publish artifacts to nexus
+          command: |
+             VERSION=$(mvn -q \
+              -Dexec.executable="echo" \
+              -Dexec.args='${project.version}' \
+              --non-recursive \
+              org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)
+
+             file=$(ls target/ | grep jar | sed -n 1p)
+
+             curl -v --user admin:admin --upload-file target/${file} http://107.23.11.53:8081/repository/scala-maven/com/jesperdj/scala-maven-example/${VERSION}/${file}
+              
 
       - run:
           name: Install AWS cli

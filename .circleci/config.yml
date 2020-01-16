@@ -155,9 +155,11 @@ jobs:
           
       - nexus-platform-orb/install 
       
+      - run: ls ~/repo/workspace/archive/target/
+      
       - nexus-platform-orb/publish:          
           serverurl: "http://107.23.11.53:8081"
-          filename: "~/repo/workspace/archive/target/scala-maven-example-1.0.0-SNAPSHOT.jar"
+          filename: "workspace/archive/target/scala-maven-example-1.0.0-SNAPSHOT.jar"
           attributes: "-CgroupId=com.jesperdj -CartifactId=scala-maven-example -Cversion=1.0.0-SNAPSHOT -Aextension=jar"     
           repository: scala-maven
 

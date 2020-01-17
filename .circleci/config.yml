@@ -139,11 +139,13 @@ jobs:
                REPOSITORY=scala-maven-release
              fi
              
-             echo $VERSION                          
+             echo $ARTIFACT_VERSION                          
              echo $REPOSITORY
              
-             file=$(ls ~/repo/workspace/archive/target/ | grep jar | sed -n 1p)
-             curl -v --user ${NEXUS_USERNAME}:${NEXUS_PASSWORD} --upload-file ~/repo/workspace/archive/target/${file} ${NEXUS_URL}/repository/${REPOSITORY}/com/jesperdj/scala-maven-example/${ARTIFACT_VERSION}/${file}
+             FILE=$(ls ~/repo/workspace/archive/target/ | grep jar | sed -n 1p)
+             echo $FILE
+             
+             curl -v --user ${NEXUS_USERNAME}:${NEXUS_PASSWORD} --upload-file ~/repo/workspace/archive/target/${file} ${NEXUS_URL}/repository/${REPOSITORY}/com/jesperdj/scala-maven-example/${ARTIFACT_VERSION}/${FILE}
               
       - run:
           name: Install AWS cli

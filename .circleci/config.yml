@@ -189,8 +189,8 @@ jobs:
           command: |
             cd ~/repo/workspace/archive/
             eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-            docker tag scala-maven:latest 352399117001.dkr.ecr.us-east-1.amazonaws.com/scala-maven:${APP_VERSION}
-            docker push 352399117001.dkr.ecr.us-east-1.amazonaws.com/scala-maven:${APP_VERSION}
+            docker tag scala-maven:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${APP_VERSION}
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:${APP_VERSION}
 
 # show all docker images
 #      - run:

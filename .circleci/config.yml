@@ -144,7 +144,7 @@ jobs:
               then
                 ARTIFACT_VERSION=$(echo $JAR_VERSION | cut -c -5)
                 FILENAME=$(ls ~/repo/workspace/archive/target/ | grep jar | sed -n 1p)
-                FILE=$(mv $FILENAME ~/repo/workspace/archive/target/scala-maven-example-${ARTIFACT_VERSION}-jar-with-dependencies.jar)
+                FILE=$(mv ~/repo/workspace/archive/target/$FILENAME ~/repo/workspace/archive/target/scala-maven-example-${ARTIFACT_VERSION}-jar-with-dependencies.jar)
                 
                 echo $FILENAME
                 echo $FILE

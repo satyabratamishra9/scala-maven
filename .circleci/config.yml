@@ -310,7 +310,8 @@ workflows:
           tags:
             only: /^v.*/
           branches:
-              ignore: /.*/
+            only: 
+            - master
               
     - hold: 
         type: approval 
@@ -320,7 +321,8 @@ workflows:
           tags:
             only: /^v.*/
           branches:
-              ignore: /.*/
+            only: 
+            - master
               
     - test:
         requires: 
@@ -329,8 +331,9 @@ workflows:
           tags:
             only: /^v.*/
           branches:
-              ignore: /.*/  
-              
+            only: 
+            - master
+            
     - build:
         requires:
           - test
@@ -338,7 +341,8 @@ workflows:
           tags:
             only: /^v.*/
           branches:
-              ignore: /.*/                   
+            only: 
+            - master                   
              
     - deploy:
         requires:
@@ -347,4 +351,5 @@ workflows:
           tags:
             only: /^v.*/ 
           branches:
-              ignore: /.*/ 
+            only: 
+            - master

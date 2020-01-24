@@ -323,6 +323,8 @@ workflows:
               ignore: /.*/
               
     - test:
+        requires: 
+          - hold
         filters:
           tags:
             only: /^v.*/

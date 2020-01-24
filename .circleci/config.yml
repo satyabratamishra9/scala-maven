@@ -308,12 +308,32 @@ workflows:
             
   approval-deploy-with-tag:
     jobs:
+    - slack/approval-notification:
+        message: "Pending approval - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"
+        webhook: '${SLACK_WEBHOOK}'        
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+              ignore: /.*/
+              
+    - hold: 
+        type: approval 
+        requires: 
+          - slack/approval-notification
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+              ignore: /.*/
+              
     - test:
         filters:
           tags:
             only: /^v.*/
           branches:
-              ignore: /.*/            
+              ignore: /.*/  
+              
     - build:
         requires:
           - test
@@ -321,39 +341,11 @@ workflows:
           tags:
             only: /^v.*/
           branches:
-              ignore: /.*/ 
-    - mail:
-        requires:
-          - build
-        filters:
-          tags:
-            only: /^v.*/
-          branches:
-              ignore: /.*/
-              
-    - slack/approval-notification:
-        message: "Pending approval - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"
-        webhook: '${SLACK_WEBHOOK}'
-        requires:
-          - mail
-        filters:
-          tags:
-            only: /^v.*/
-          branches:
-              ignore: /.*/
-          
-    - hold: 
-        type: approval 
-        requires: 
-          - mail
-        filters:
-          tags:
-            only: /^v.*/
-          branches:
-              ignore: /.*/
+              ignore: /.*/                   
+             
     - deploy:
         requires:
-          - hold
+          - build
         filters:
           tags:
             only: /^v.*/ 

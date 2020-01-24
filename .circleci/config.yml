@@ -16,6 +16,8 @@ jobs:
 
     steps:
       - checkout
+      
+      - echo ${CIRCLE_BRANCH}
 
       # download and cache dependencies
       - restore_cache:
@@ -130,23 +132,20 @@ jobs:
       - run:
           name: publish artifacts to nexus
           command: |  
-             ARTIFACT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)
-              
-             if [[ $ARTIFACT_VERSION = *SNAPSHOT ]]
-             then
-               REPOSITORY=scala-maven
-             else
-               REPOSITORY=scala-maven-release
-             fi
-             
-             echo $ARTIFACT_VERSION                          
-             echo $REPOSITORY
-             
-             FILE=$(ls ~/repo/workspace/archive/target/ | grep jar | sed -n 1p)
-             echo $FILE
-             
-             curl -v --user ${NEXUS_USERNAME}:${NEXUS_PASSWORD} --upload-file ~/repo/workspace/archive/target/${FILE} ${NEXUS_URL}/repository/${REPOSITORY}/com/jesperdj/scala-maven-example/${ARTIFACT_VERSION}/${FILE}
-              
+             JAR_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.6.0:exec)              
+            
+             if [ $CIRCLE_BRANCH == "develop" ]
+              then
+                ARTIFACT_VERSION=$(JAR_VERSION)
+                FILE=$(ls ~/repo/workspace/archive/target/ | grep jar | sed -n 1p)
+                curl -v --user ${NEXUS_USERNAME}:${NEXUS_PASSWORD} --upload-file ~/repo/workspace/archive/target/${FILE} ${NEXUS_URL}/repository/scala-maven/com/jesperdj/scala-maven-example/${ARTIFACT_VERSION}/${FILE}
+
+             elif [ $CIRCLE_BRANCH == "release" || $CIRCLE_BRANCH == "" ]
+              then
+                ARTIFACT_VERSION=$(echo JAR_VERSION | cut -c -5)
+                FILE=mv $(ls ~/repo/workspace/archive/target/ | grep jar | sed -n 1p) scala-maven-example-${ARTIFACT_VERSION}--jar-with-dependencies.jar
+                curl -v --user ${NEXUS_USERNAME}:${NEXUS_PASSWORD} --upload-file ~/repo/workspace/archive/target/${FILE} ${NEXUS_URL}/repository/scala-maven-release/com/jesperdj/scala-maven-example/${ARTIFACT_VERSION}/${FILE}
+                      
       - run:
           name: Install AWS cli
           command: |

@@ -306,50 +306,50 @@ workflows:
     - slack/approval-notification:
         message: "Pending approval - https://circleci.com/workflow-run/$CIRCLE_WORKFLOW_ID"
         webhook: '${SLACK_WEBHOOK}'        
-        filters:
-          tags:
-            only: /^v.*/
+        filters:          
           branches:
             only: 
             - master
+          tags:
+            only: /^v.*/
               
     - hold: 
         type: approval 
         requires: 
           - slack/approval-notification
-        filters:
-          tags:
-            only: /^v.*/
+        filters:          
           branches:
             only: 
             - master
+          tags:
+            only: /^v.*/
               
     - test:
         requires: 
           - hold
-        filters:
-          tags:
-            only: /^v.*/
+        filters:          
           branches:
             only: 
             - master
+          tags:
+            only: /^v.*/
             
     - build:
         requires:
           - test
-        filters:
-          tags:
-            only: /^v.*/
+        filters:          
           branches:
             only: 
-            - master                   
+            - master
+          tags:
+            only: /^v.*/
              
     - deploy:
         requires:
           - build
-        filters:
-          tags:
-            only: /^v.*/ 
+        filters:          
           branches:
             only: 
             - master
+          tags:
+            only: /^v.*/ 

@@ -290,7 +290,10 @@ workflows:
   version: 2.1
   test-build-n-deploy:
     jobs:
-    - test
+    - test:
+       filters:          
+          branches:
+              ignore: master
     - build:
         requires:
           - test

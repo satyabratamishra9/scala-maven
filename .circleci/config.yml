@@ -290,7 +290,7 @@ workflows:
   version: 2.1
   test-build-n-deploy:
     jobs:
-    - test:       
+    - test      
     - build:
         requires:
           - test

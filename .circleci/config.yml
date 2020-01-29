@@ -138,7 +138,7 @@ jobs:
               then
                 ARTIFACT_VERSION=$(echo $JAR_VERSION)
                 FILE=$(ls ~/repo/workspace/archive/target/ | grep jar | sed -n 1p)
-                curl -v --user ${NEXUS_USERNAME}:${NEXUS_PASSWORD} --upload-file ~/repo/workspace/archive/target/${FILE} ${NEXUS_URL}/repository/scala-maven/com/jesperdj/scala-maven-example/${ARTIFACT_VERSION}/${FILE}
+                curl -v -u ${NEXUS_USERNAME}:${NEXUS_PASSWORD} --upload-file ~/repo/workspace/archive/target/${FILE} ${NEXUS_URL}/repository/trip-service-snapshots/com/jesperdj/scala-maven-example/${ARTIFACT_VERSION}/${FILE}
 
              elif [ $CIRCLE_BRANCH == "release" || $CIRCLE_BRANCH == "" ]
               then

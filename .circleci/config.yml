@@ -329,24 +329,23 @@ workflows:
             only:
             - develop
             
-  approval-deploy-with-tag:             
-    - hold: 
-        type: approval 
+  approval-deploy-with-tag:
+    jobs:
+    - hold:
+        type: approval        
         filters:
           tags:
             only: /^v.*/
           branches:
               ignore: /.*/
-              
     - test:
-        requires: 
+        requires:
           - hold
         filters:
           tags:
             only: /^v.*/
           branches:
-              ignore: /.*/  
-              
+              ignore: /.*/
     - build:
         requires:
           - test
@@ -354,13 +353,13 @@ workflows:
           tags:
             only: /^v.*/
           branches:
-              ignore: /.*/                   
-             
+              ignore: /.*/    
     - deploy:
         requires:
           - build
         filters:
           tags:
-            only: /^v.*/ 
+            only: /^v.*/
           branches:
-              ignore: /.*/ 
+              ignore: /.*/
+        context: production-eks

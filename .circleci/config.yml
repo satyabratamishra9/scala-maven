@@ -338,17 +338,9 @@ workflows:
             only: /^v.*/
           branches:
               ignore: /.*/
-    - test:
-        requires:
-          - hold
-        filters:
-          tags:
-            only: /^v.*/
-          branches:
-              ignore: /.*/
     - build:
         requires:
-          - test
+          - hold
         filters:
           tags:
             only: /^v.*/
